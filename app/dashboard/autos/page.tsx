@@ -173,10 +173,6 @@ export default function CarsPage() {
                 Nieuwe auto
               </Link>
             </Button>
-            <Button variant="outline">
-              <FileDown className="mr-2 h-4 w-4" />
-              Exporteren
-            </Button>
           </div>
         </div>
 
