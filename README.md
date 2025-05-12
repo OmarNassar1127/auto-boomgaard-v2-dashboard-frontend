@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Auto Boomgaard Dashboard
 
-## Getting Started
+Een modern en responsief beheerderspaneel voor Auto Boomgaard autobedrijf, gebouwd met Next.js en ShadCN.
 
-First, run the development server:
+## Functionaliteiten
 
+- 🔐 Authenticatie en gebruikersbeheer
+- 📊 Dashboard met statistieken 
+- 🚗 CRUD-operaties voor auto's
+- 📸 Foto-upload functionaliteit
+- 🔍 Uitgebreide zoek- en filterfuncties
+- 📱 Volledig responsief ontwerp
+
+## Technologiestack
+
+- **Framework**: [Next.js 14](https://nextjs.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Componenten**: [ShadCN](https://ui.shadcn.com/)
+- **Grafieken**: [Recharts](https://recharts.org/)
+- **Formuliervalidatie**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Pictogrammen**: [Lucide React](https://lucide.dev/)
+
+## Aan de slag
+
+### Vereisten
+
+- Node.js 18.0.0 of hoger
+- npm of yarn
+
+### Installatie
+
+1. Clone de repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/username/auto-boomgaard-dashboard.git
+cd auto-boomgaard-dashboard
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Installeer dependencies:
+```bash
+npm install
+# of
+yarn install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Start de ontwikkelingsserver:
+```bash
+npm run dev
+# of
+yarn dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in je browser.
 
-## Learn More
+## Projectstructuur
 
-To learn more about Next.js, take a look at the following resources:
+```
+├── app/                # Next.js app directory
+│   ├── components/     # UI en custom componenten
+│   ├── dashboard/      # Dashboard pagina's
+│   ├── data/           # Mock data
+│   ├── hooks/          # Custom React hooks
+│   ├── lib/            # Utility functies
+│   └── ...             # Andere pagina's en bestanden
+├── public/             # Statische assets
+├── .gitignore
+├── next.config.js
+├── package.json
+├── postcss.config.js
+├── README.md
+├── tailwind.config.js
+└── tsconfig.json
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Authentication
+- Login/registratiepagina
+- Wachtwoord vergeten functionaliteit
+- Gebruikersbeheer en -goedkeuring
 
-## Deploy on Vercel
+### Dashboard
+- Overzicht van belangrijke statistieken
+- Grafieken voor verkoopcijfers
+- Recent toegevoegde auto's
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Auto's beheren
+- Overzicht van alle auto's met filteren en zoeken
+- Detail pagina's voor individuele auto's
+- Formulieren voor het toevoegen en bewerken van auto's
+- Foto-upload functionaliteit
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## API integratie
+
+Het project is voorbereid om met een backend API te integreren. Momenteel worden mock-gegevens gebruikt uit `app/data/mockData.json`.
+
+## Licentie
+
+[MIT](LICENSE)
