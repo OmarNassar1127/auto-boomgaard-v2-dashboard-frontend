@@ -4,13 +4,7 @@ import { useState, useEffect } from "react"
 import { Header } from "@/app/components/dashboard/header"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select"
+
 import {
   Table,
   TableBody,
@@ -22,7 +16,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { formatDate } from "@/app/lib/utils"
 import mockData from "@/app/data/mockData.json"
-import { Search, UserPlus, CheckCircle, XCircle, MoreHorizontal, Filter, UserCog } from "lucide-react"
+import { Search, UserPlus, CheckCircle, XCircle, MoreHorizontal, UserCog } from "lucide-react"
 
 interface User {
   id: string
@@ -37,8 +31,6 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
   const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [roleFilter, setRoleFilter] = useState("all")
   const [userModalOpen, setUserModalOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
@@ -62,16 +54,8 @@ export default function UsersPage() {
       )
     }
 
-    // Filters toepassen
-    if (statusFilter && statusFilter !== "all") {
-      result = result.filter((user) => user.status === statusFilter)
-    }
-    if (roleFilter && roleFilter !== "all") {
-      result = result.filter((user) => user.role === roleFilter)
-    }
-
     setFilteredUsers(result)
-  }, [users, searchQuery, statusFilter, roleFilter])
+  }, [users, searchQuery])
 
   const approveUser = (id: string) => {
     setUsers((prev) =>
@@ -152,157 +136,100 @@ export default function UsersPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
-                <Select
-                  value={statusFilter}
-                  onValueChange={setStatusFilter}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Alle statussen" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alle statussen</SelectItem>
-                    <SelectItem value="active">Actief</SelectItem>
-                    <SelectItem value="pending">In afwachting</SelectItem>
-                    <SelectItem value="inactive">Inactief</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Rol</label>
-                <Select
-                  value={roleFilter}
-                  onValueChange={setRoleFilter}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Alle rollen" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alle rollen</SelectItem>
-                    <SelectItem value="admin">Beheerder</SelectItem>
-                    <SelectItem value="verkoper">Verkoper</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  setStatusFilter("all")
-                  setRoleFilter("all")
-                  setSearchQuery("")
-                }}
-              >
-                <Filter className="mr-2 h-4 w-4" />
-                Filters resetten
-              </Button>
-            </CardContent>
-          </Card>
-
-          <div className="lg:col-span-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gebruikerslijst</CardTitle>
-                <CardDescription>
-                  Beheer gebruikers en hun toegangsrechten
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[50px]">ID</TableHead>
-                        <TableHead>Naam</TableHead>
-                        <TableHead>E-mail</TableHead>
-                        <TableHead>Rol</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Aangemaakt op</TableHead>
-                        <TableHead className="text-right">Acties</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredUsers.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={7} className="text-center py-8">
-                            Geen gebruikers gevonden die aan de criteria voldoen.
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        filteredUsers.map((user) => (
-                          <TableRow key={user.id}>
-                            <TableCell className="font-medium">
-                              {user.id}
-                            </TableCell>
-                            <TableCell>
-                              {user.name}
-                            </TableCell>
-                            <TableCell>
-                              {user.email}
-                            </TableCell>
-                            <TableCell>
-                              {getRoleText(user.role)}
-                            </TableCell>
-                            <TableCell>
-                              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeClass(user.status)}`}>
-                                {getStatusText(user.status)}
-                              </span>
-                            </TableCell>
-                            <TableCell>
-                              {formatDate(user.created_at)}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                {user.status === "pending" && (
-                                  <>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => approveUser(user.id)}
-                                      title="Goedkeuren"
-                                    >
-                                      <CheckCircle className="h-4 w-4 text-green-500" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => rejectUser(user.id)}
-                                      title="Afkeuren"
-                                    >
-                                      <XCircle className="h-4 w-4 text-red-500" />
-                                    </Button>
-                                  </>
-                                )}
+        <Card>
+          <CardHeader>
+            <CardTitle>Gebruikerslijst</CardTitle>
+            <CardDescription>
+              Beheer gebruikers en hun toegangsrechten
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[50px]">ID</TableHead>
+                    <TableHead>Naam</TableHead>
+                    <TableHead>E-mail</TableHead>
+                    <TableHead>Rol</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Aangemaakt op</TableHead>
+                    <TableHead className="text-right">Acties</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8">
+                        Geen gebruikers gevonden die aan de criteria voldoen.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell className="font-medium">
+                          {user.id}
+                        </TableCell>
+                        <TableCell>
+                          {user.name}
+                        </TableCell>
+                        <TableCell>
+                          {user.email}
+                        </TableCell>
+                        <TableCell>
+                          {getRoleText(user.role)}
+                        </TableCell>
+                        <TableCell>
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeClass(user.status)}`}>
+                            {getStatusText(user.status)}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {formatDate(user.created_at)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {user.status === "pending" && (
+                              <>
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  onClick={() => {
-                                    setSelectedUser(user)
-                                    setUserModalOpen(true)
-                                  }}
-                                  title="Bewerken"
+                                  onClick={() => approveUser(user.id)}
+                                  title="Goedkeuren"
                                 >
-                                  <UserCog className="h-4 w-4" />
+                                  <CheckCircle className="h-4 w-4 text-green-500" />
                                 </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => rejectUser(user.id)}
+                                  title="Afkeuren"
+                                >
+                                  <XCircle className="h-4 w-4 text-red-500" />
+                                </Button>
+                              </>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setSelectedUser(user)
+                                setUserModalOpen(true)
+                              }}
+                              title="Bewerken"
+                            >
+                              <UserCog className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
 
             <div className="mt-6">
               <Card>
@@ -358,8 +285,6 @@ export default function UsersPage() {
                 </CardContent>
               </Card>
             </div>
-          </div>
-        </div>
       </div>
     </div>
   )

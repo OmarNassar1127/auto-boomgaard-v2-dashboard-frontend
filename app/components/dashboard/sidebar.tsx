@@ -53,12 +53,6 @@ export function Sidebar({ className }: SidebarProps) {
       ],
     },
     {
-      label: "Statistieken",
-      icon: FileBarChart,
-      href: "/dashboard/statistieken",
-      active: pathname === "/dashboard/statistieken",
-    },
-    {
       label: "Gebruikers",
       icon: Users,
       href: "/dashboard/gebruikers",
