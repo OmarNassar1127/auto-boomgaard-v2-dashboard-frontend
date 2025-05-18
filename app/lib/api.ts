@@ -75,6 +75,27 @@ export const authAPI = {
   user: async () => {
     return apiClient('/auth/user')
   },
+  
+  changePassword: async (data: {
+    current_password: string
+    new_password: string
+    new_password_confirmation: string
+  }) => {
+    return apiClient('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
+  
+  changeEmail: async (data: {
+    email: string
+    password: string
+  }) => {
+    return apiClient('/auth/change-email', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
 }
 
 // Cars API
