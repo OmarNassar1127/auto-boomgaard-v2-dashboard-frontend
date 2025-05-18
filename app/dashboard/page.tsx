@@ -4,31 +4,30 @@ import { useState, useEffect } from "react"
 import { Header } from "@/app/components/dashboard/header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
-import { Car, DollarSign, Truck, Users, ArrowUp, ArrowDown, LineChart, BarChart, Plus, AlertCircle } from "lucide-react"
+import { 
+  Car, 
+  DollarSign, 
+  Truck, 
+  Package,
+  Trophy,
+  Euro,
+  Plus, 
+  AlertCircle,
+  ArrowUp
+} from "lucide-react"
 import Link from "next/link"
-import { carsAPI, type CarListItem, type CarData } from "@/app/lib/api"
+import { carsAPI, statisticsAPI, type CarListItem, type Statistic } from "@/app/lib/api"
 
-interface DashboardStats {
-  totalCars: number
-  publishedCars: number
-  draftCars: number
-  soldCars: number
-  listedCars: number
-  reservedCars: number
-  upcomingCars: number
+interface StatisticsData {
+  total_cars: Statistic
+  current_portfolio: Statistic
+  cars_sold_this_year: Statistic
+  average_price: Statistic
 }
 
 export default function DashboardPage() {
   const [cars, setCars] = useState<CarListItem[]>([])
-  const [stats, setStats] = useState<DashboardStats>({
-    totalCars: 0,
-    publishedCars: 0,
-    draftCars: 0,
-    soldCars: 0,
-    listedCars: 0,
-    reservedCars: 0,
-    upcomingCars: 0
-  })
+  const [statistics, setStatistics] = useState<StatisticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -38,24 +37,14 @@ export default function DashboardPage() {
         setLoading(true)
         setError(null)
         
-        // Fetch all cars for dashboard overview  
-        const response = await carsAPI.getAll({ per_page: 100 })
-        console.log('Dashboard API Response:', response) // Debug log
-        const fetchedCars: CarListItem[] = response.data || []
+        // Fetch statistics and recent cars in parallel
+        const [statsResponse, carsResponse] = await Promise.all([
+          statisticsAPI.getStatistics(),
+          carsAPI.getAll({ per_page: 6 })
+        ])
         
-        setCars(fetchedCars)
-        
-        // Calculate statistics
-        const newStats: DashboardStats = {
-          totalCars: fetchedCars.length,
-          publishedCars: fetchedCars.filter(car => car.post_status === 'published').length,
-          draftCars: fetchedCars.filter(car => car.post_status === 'draft').length,
-          soldCars: fetchedCars.filter(car => car.vehicle_status === 'sold').length,
-          listedCars: fetchedCars.filter(car => car.vehicle_status === 'listed').length,
-          reservedCars: fetchedCars.filter(car => car.vehicle_status === 'reserved').length,
-          upcomingCars: fetchedCars.filter(car => car.vehicle_status === 'upcoming').length
-        }
-        setStats(newStats)
+        setStatistics(statsResponse.data)
+        setCars(carsResponse.data || [])
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err)
         setError(err instanceof Error ? err.message : 'Failed to load dashboard data')
@@ -66,6 +55,36 @@ export default function DashboardPage() {
 
     fetchDashboardData()
   }, [])
+
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'car':
+        return Car
+      case 'package':
+        return Package
+      case 'trophy':
+        return Trophy
+      case 'euro':
+        return Euro
+      default:
+        return Car
+    }
+  }
+
+  const getColorClass = (color: string) => {
+    switch (color) {
+      case 'blue':
+        return 'bg-blue-500/10 text-blue-500'
+      case 'green':
+        return 'bg-green-500/10 text-green-500'
+      case 'purple':
+        return 'bg-purple-500/10 text-purple-500'
+      case 'orange':
+        return 'bg-orange-500/10 text-orange-500'
+      default:
+        return 'bg-primary/10 text-primary'
+    }
+  }
 
   const formatCurrency = (amount: string | number): string => {
     if (typeof amount === 'string') {
@@ -146,81 +165,26 @@ export default function DashboardPage() {
 
         {/* Statistics Cards */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Totaal auto's</p>
-                  <p className="text-3xl font-bold">{stats.totalCars}</p>
-                </div>
-                <div className="bg-primary/10 p-3 rounded-full">
-                  <Car className="h-6 w-6 text-primary" />
-                </div>
-              </div>
-              <div className="flex items-center mt-4 text-sm text-muted-foreground">
-                <span>{stats.publishedCars} gepubliceerd</span>
-                <span className="mx-2">•</span>
-                <span>{stats.draftCars} concepten</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Te koop</p>
-                  <p className="text-3xl font-bold">{stats.listedCars}</p>
-                </div>
-                <div className="bg-green-500/10 p-3 rounded-full">
-                  <DollarSign className="h-6 w-6 text-green-500" />
-                </div>
-              </div>
-              <div className="flex items-center mt-4 text-sm text-muted-foreground">
-                <span>{stats.reservedCars} gereserveerd</span>
-                <span className="mx-2">•</span>
-                <span>{stats.upcomingCars} aankomend</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Verkocht</p>
-                  <p className="text-3xl font-bold">{stats.soldCars}</p>
-                </div>
-                <div className="bg-blue-500/10 p-3 rounded-full">
-                  <Truck className="h-6 w-6 text-blue-500" />
-                </div>
-              </div>
-              <div className="flex items-center mt-4 text-sm text-muted-foreground">
-                <ArrowUp className="mr-1 h-4 w-4 text-green-500" />
-                <span className="text-green-500 font-medium">
-                  {stats.totalCars > 0 ? Math.round((stats.soldCars / stats.totalCars) * 100) : 0}%
-                </span>
-                <span className="ml-1">van totaal</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Status verdeling</p>
-                  <p className="text-xl font-semibold">
-                    {stats.totalCars > 0 ? `${Math.round((stats.publishedCars / stats.totalCars) * 100)}%` : '0%'}
-                  </p>
-                  <p className="text-sm text-muted-foreground">gepubliceerd</p>
-                </div>
-                <div className="bg-orange-500/10 p-3 rounded-full">
-                  <BarChart className="h-6 w-6 text-orange-500" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {statistics && Object.entries(statistics).map(([key, stat]) => {
+            const IconComponent = getIconComponent(stat.icon)
+            const colorClass = getColorClass(stat.color)
+            
+            return (
+              <Card key={key}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                      <p className="text-3xl font-bold">{stat.value}</p>
+                    </div>
+                    <div className={`p-3 rounded-full ${colorClass}`}>
+                      <IconComponent className="h-6 w-6" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
 
         {/* Recent Cars */}
@@ -255,7 +219,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {cars.slice(0, 6).map((car: CarListItem) => (
+                {cars.map((car: CarListItem) => (
                   <Card key={car.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="aspect-video w-full overflow-hidden bg-muted">
                       {car.main_image ? (

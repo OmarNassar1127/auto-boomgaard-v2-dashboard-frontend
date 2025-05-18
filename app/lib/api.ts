@@ -274,6 +274,13 @@ export const usersAPI = {
   },
 }
 
+// Simplified Statistics API - single endpoint
+export const statisticsAPI = {
+  getStatistics: async () => {
+    return apiClient('/dashboard/statistics')
+  },
+}
+
 // TypeScript Types
 export interface User {
   id: number
@@ -302,6 +309,13 @@ export interface RegisterData {
   password: string
   password_confirmation: string
   role?: 'verkoper'
+}
+
+export interface Statistic {
+  label: string
+  value: number | string
+  icon: string
+  color: string
 }
 
 export interface CarListItem {
