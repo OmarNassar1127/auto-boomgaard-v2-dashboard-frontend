@@ -27,6 +27,17 @@ const apiClient = async (endpoint: string, options: RequestInit = {}) => {
   
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'An error occurred' }))
+    
+    // Handle account inactive error by clearing token and redirecting to login
+    if (error.error === 'account_inactive' || response.status === 403) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth_token')
+        // Redirect to login page
+        window.location.href = '/login'
+      }
+      throw new Error(error.message || 'Your account is not active')
+    }
+    
     throw new Error(error.message || 'API request failed')
   }
 

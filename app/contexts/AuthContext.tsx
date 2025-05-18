@@ -55,9 +55,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(response.user)
     } catch (error) {
       console.error('Failed to fetch user:', error)
-      // If token is invalid, clear it
+      // If token is invalid or user is inactive, clear it
       localStorage.removeItem('auth_token')
       setToken(null)
+      setUser(null)
     } finally {
       setIsLoading(false)
     }
