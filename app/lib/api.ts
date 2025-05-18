@@ -1,0 +1,267 @@
+// API configuration
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001'
+
+// Get token from localStorage
+const getAuthToken = (): string | null => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('auth_token')
+  }
+  return null
+}
+
+// API client with authentication
+const apiClient = async (endpoint: string, options: RequestInit = {}) => {
+  const token = getAuthToken()
+  
+  const config: RequestInit = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
+    },
+    ...options,
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, config)
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: 'An error occurred' }))
+    throw new Error(error.message || 'API request failed')
+  }
+
+  return response.json()
+}
+
+// Auth API
+export const authAPI = {
+  login: async (credentials: { email: string; password: string }) => {
+    return apiClient('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    })
+  },
+  
+  logout: async () => {
+    return apiClient('/auth/logout', {
+      method: 'POST',
+    })
+  },
+  
+  user: async () => {
+    return apiClient('/auth/user')
+  },
+}
+
+// Cars API
+export const carsAPI = {
+  // Get all cars with optional filters (optimized for listings)
+  getAll: async (params?: {
+    search?: string
+    vehicle_status?: string
+    post_status?: string
+    per_page?: number
+    page?: number
+  }) => {
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value.toString())
+        }
+      })
+    }
+    
+    const queryString = searchParams.toString()
+    return apiClient(`/dashboard/cars${queryString ? `?${queryString}` : ''}`)
+  },
+
+  // Get single car (with full details and all images)
+  getById: async (id: string | number) => {
+    return apiClient(`/dashboard/cars/${id}`)
+  },
+
+  // Create new car
+  create: async (carData: CarData) => {
+    return apiClient('/dashboard/cars', {
+      method: 'POST',
+      body: JSON.stringify(carData),
+    })
+  },
+
+  // Update car
+  update: async (id: string | number, carData: Partial<CarData>) => {
+    return apiClient(`/dashboard/cars/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(carData),
+    })
+  },
+
+  // Delete car
+  delete: async (id: string | number) => {
+    return apiClient(`/dashboard/cars/${id}`, {
+      method: 'DELETE',
+    })
+  },
+
+  // Upload images
+  uploadImages: async (id: string | number, images: File[], mainImageIndex?: number) => {
+    const formData = new FormData()
+    images.forEach((image) => {
+      formData.append('images[]', image)
+    })
+    
+    // Add main image index if specified
+    if (mainImageIndex !== undefined && mainImageIndex >= 0) {
+      formData.append('main_image_index', mainImageIndex.toString())
+    }
+
+    const token = getAuthToken()
+    const response = await fetch(`${API_BASE_URL}/dashboard/cars/${id}/images`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Upload failed' }))
+      throw new Error(error.message || 'Image upload failed')
+    }
+
+    return response.json()
+  },
+
+  // Set main image
+  setMainImage: async (carId: string | number, mediaId: string | number) => {
+    return apiClient(`/dashboard/cars/${carId}/images/${mediaId}/main`, {
+      method: 'PATCH',
+    })
+  },
+
+  // Delete image
+  deleteImage: async (carId: string | number, mediaId: string | number) => {
+    return apiClient(`/dashboard/cars/${carId}/images/${mediaId}`, {
+      method: 'DELETE',
+    })
+  },
+
+  // Toggle publish status
+  togglePublishStatus: async (id: string | number, postStatus: 'draft' | 'published') => {
+    return apiClient(`/dashboard/cars/${id}/publish`, {
+      method: 'PATCH',
+      body: JSON.stringify({ post_status: postStatus }),
+    })
+  },
+
+  // Update vehicle status
+  updateVehicleStatus: async (id: string | number, vehicleStatus: 'sold' | 'listed' | 'reserved' | 'upcoming') => {
+    return apiClient(`/dashboard/cars/${id}/vehicle-status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ vehicle_status: vehicleStatus }),
+    })
+  },
+}
+
+// TypeScript Types
+export interface CarListItem {
+  id: number
+  brand: string
+  model: string
+  price: string
+  tax_info: string
+  mileage: string
+  year: string
+  color: string
+  transmission: string
+  fuel: string
+  power: string
+  vehicle_status: 'sold' | 'listed' | 'reserved' | 'upcoming'
+  post_status: 'draft' | 'published'
+  main_image?: string
+  created_at: string
+  updated_at: string
+}
+
+// For the detailed car view (single car)
+export interface CarData {
+  id?: number
+  brand: string
+  model: string
+  price: string
+  tax_info: string
+  mileage: string
+  year: string
+  color: string
+  transmission: string
+  fuel: string
+  power: string
+  specifications?: {
+    first_registration_date?: string
+    seats?: string
+    torque?: string
+    acceleration?: string
+    wheelbase?: string
+    cylinders?: string
+    model_date_from?: string
+    doors?: string
+    gears?: string
+    top_speed?: string
+    tank_capacity?: string
+    engine_capacity?: string
+    weight?: string
+    [key: string]: string | undefined
+  }
+  highlights?: {
+    content?: string
+    [key: string]: any
+  }
+  options_accessories?: {
+    data?: {
+      exterieur?: string[]
+      infotainment?: string[]
+      interieur_comfort?: string[]
+      extra?: string[]
+    }
+  }
+  vehicle_status: 'sold' | 'listed' | 'reserved' | 'upcoming'
+  post_status: 'draft' | 'published'
+  created_at?: string
+  updated_at?: string
+  images?: {
+    main?: string
+    all?: Array<{
+      id: number
+      url: string
+      is_main: boolean
+    }>
+  }
+  // For backward compatibility with dashboard
+  main_image?: string
+}
+
+export interface ApiResponse<T> {
+  data: T
+  message?: string
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  meta: {
+    total: number
+    count: number
+    per_page: number
+    current_page: number
+    last_page: number
+    from?: number
+    to?: number
+  }
+  links: {
+    first: string
+    last: string
+    prev: string | null
+    next: string | null
+  }
+}

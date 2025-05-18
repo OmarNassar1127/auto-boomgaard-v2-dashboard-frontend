@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/app/contexts/AuthContext"
 import { Sidebar } from "@/app/components/dashboard/sidebar"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Loader2 } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 
 export default function DashboardLayout({
@@ -10,8 +12,17 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/login')
+    }
+  }, [isAuthenticated, isLoading, router])
 
   // Handle responsive layout
   useEffect(() => {
@@ -28,6 +39,20 @@ export default function DashboardLayout({
     window.addEventListener("resize", checkScreenSize)
     return () => window.removeEventListener("resize", checkScreenSize)
   }, [])
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
+  }
+
+  // Don't render dashboard if not authenticated
+  if (!isAuthenticated) {
+    return null
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">

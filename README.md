@@ -5,7 +5,7 @@ Een modern en responsief beheerderspaneel voor Auto Boomgaard autobedrijf, gebou
 ## Functionaliteiten
 
 - 🔐 Authenticatie en gebruikersbeheer
-- 📊 Dashboard met statistieken 
+- 📊 Dashboard met statistieken
 - 🚗 CRUD-operaties voor auto's
 - 📸 Foto-upload functionaliteit
 - 🔍 Uitgebreide zoek- en filterfuncties
@@ -30,12 +30,14 @@ Een modern en responsief beheerderspaneel voor Auto Boomgaard autobedrijf, gebou
 ### Installatie
 
 1. Clone de repository:
+
 ```bash
 git clone https://github.com/username/auto-boomgaard-dashboard.git
 cd auto-boomgaard-dashboard
 ```
 
 2. Installeer dependencies:
+
 ```bash
 npm install
 # of
@@ -43,13 +45,14 @@ yarn install
 ```
 
 3. Start de ontwikkelingsserver:
+
 ```bash
 npm run dev
 # of
 yarn dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in je browser.
+4. Open [http://127.0.0.1:8001](http://127.0.0.1:8001) in je browser.
 
 ## Projectstructuur
 
@@ -74,16 +77,19 @@ yarn dev
 ## Features
 
 ### Authentication
+
 - Login/registratiepagina
 - Wachtwoord vergeten functionaliteit
 - Gebruikersbeheer en -goedkeuring
 
 ### Dashboard
+
 - Overzicht van belangrijke statistieken
 - Grafieken voor verkoopcijfers
 - Recent toegevoegde auto's
 
 ### Auto's beheren
+
 - Overzicht van alle auto's met filteren en zoeken
 - Detail pagina's voor individuele auto's
 - Formulieren voor het toevoegen en bewerken van auto's

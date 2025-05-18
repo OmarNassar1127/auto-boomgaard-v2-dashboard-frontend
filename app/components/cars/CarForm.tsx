@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useState, useCallback } from "react"
+import { useRouter } from "next/navigation"
 import { Header } from "@/app/components/dashboard/header"
 import { Button } from "@/app/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Badge } from "@/app/components/ui/badge"
-import { ArrowLeft, Save, AlertCircle, RefreshCw } from "lucide-react"
+import { ArrowLeft, AlertCircle } from "lucide-react"
 import { carsAPI, type CarData } from "@/app/lib/api"
 
 // Import form components
@@ -22,29 +22,14 @@ interface FormErrors {
   [key: string]: string
 }
 
-interface EditCarState {
-  car: CarData | null
-  loading: boolean
-  error: string | null
-}
-
-export default function EditCarPage() {
-  const params = useParams()
+export default function CarForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedTab, setSelectedTab] = useState("basic")
   const [errors, setErrors] = useState<FormErrors>({})
   const [imagesPreviews, setImagesPreviews] = useState<ImagePreview[]>([])
   
-  const [state, setState] = useState<EditCarState>({
-    car: null,
-    loading: true,
-    error: null,
-  })
-
-  const carId = params.id as string
-
-  // Form data states
+  // Basic Information (fixed columns in backend)
   const [basicData, setBasicData] = useState({
     brand: "",
     model: "",
@@ -60,6 +45,7 @@ export default function EditCarPage() {
     post_status: "draft" as const,
   })
 
+  // Specifications (JSON column in backend)
   const [specifications, setSpecifications] = useState({
     first_registration_date: "",
     seats: "",
@@ -76,10 +62,12 @@ export default function EditCarPage() {
     weight: "",
   })
 
+  // Highlights (JSON column in backend)
   const [highlights, setHighlights] = useState({
     content: "",
   })
 
+  // Options & Accessories (JSON column in backend)
   const [optionsAccessories, setOptionsAccessories] = useState({
     data: {
       exterieur: [] as string[],
@@ -89,74 +77,6 @@ export default function EditCarPage() {
     }
   })
 
-  // Fetch car data
-  const fetchCarData = useCallback(async () => {
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }))
-      const response = await carsAPI.getById(carId)
-      const car = response.data
-      
-      // Populate form data
-      setBasicData({
-        brand: car.brand || "",
-        model: car.model || "",
-        price: car.price || "",
-        tax_info: car.tax_info || "incl. BTW",
-        mileage: car.mileage || "",
-        year: car.year || "",
-        color: car.color || "",
-        transmission: car.transmission || "",
-        fuel: car.fuel || "",
-        power: car.power || "",
-        vehicle_status: car.vehicle_status || "upcoming",
-        post_status: car.post_status || "draft",
-      })
-
-      setSpecifications({
-        first_registration_date: car.specifications?.first_registration_date || "",
-        seats: car.specifications?.seats || "",
-        torque: car.specifications?.torque || "",
-        acceleration: car.specifications?.acceleration || "",
-        wheelbase: car.specifications?.wheelbase || "",
-        cylinders: car.specifications?.cylinders || "",
-        model_date_from: car.specifications?.model_date_from || "",
-        doors: car.specifications?.doors || "",
-        gears: car.specifications?.gears || "",
-        top_speed: car.specifications?.top_speed || "",
-        tank_capacity: car.specifications?.tank_capacity || "",
-        engine_capacity: car.specifications?.engine_capacity || "",
-        weight: car.specifications?.weight || "",
-      })
-
-      setHighlights({
-        content: car.highlights?.content || "",
-      })
-
-      setOptionsAccessories({
-        data: {
-          exterieur: car.options_accessories?.data?.exterieur || [],
-          infotainment: car.options_accessories?.data?.infotainment || [],
-          interieur_comfort: car.options_accessories?.data?.interieur_comfort || [],
-          extra: car.options_accessories?.data?.extra || [],
-        }
-      })
-
-      setState({ car, loading: false, error: null })
-    } catch (error) {
-      console.error('Error fetching car:', error)
-      setState({
-        car: null,
-        loading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch car data',
-      })
-    }
-  }, [carId])
-
-  useEffect(() => {
-    fetchCarData()
-  }, [fetchCarData])
-
-  // Form handlers
   const handleBasicChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setBasicData((prev) => ({
@@ -220,13 +140,11 @@ export default function EditCarPage() {
       return
     }
 
-    if (!state.car) return
-
     setIsSubmitting(true)
 
     try {
       // Prepare the car data according to our backend structure
-      const carData: Partial<CarData> = {
+      const carData: CarData = {
         ...basicData,
         specifications: Object.fromEntries(
           Object.entries(specifications).filter(([_, value]) => value.trim() !== "")
@@ -237,22 +155,23 @@ export default function EditCarPage() {
           : undefined,
       }
 
-      // Update the car
-      await carsAPI.update(state.car.id!, carData)
+      // Create the car
+      const response = await carsAPI.create(carData)
+      const createdCar = response.data
 
-      // Upload new images if any
-      if (imagesPreviews.length > 0 && state.car.id) {
+      // Upload images if any
+      if (imagesPreviews.length > 0 && createdCar.id) {
         const files = imagesPreviews.map(imgPreview => imgPreview.file)
         const mainImageIndex = imagesPreviews.findIndex(img => img.isMain)
         
         // Upload images with main image designation
-        await carsAPI.uploadImages(state.car.id!, files, mainImageIndex >= 0 ? mainImageIndex : undefined)
+        await carsAPI.uploadImages(createdCar.id, files, mainImageIndex >= 0 ? mainImageIndex : undefined)
       }
 
-      // Redirect to car detail
-      router.push(`/dashboard/autos/${state.car.id}`)
+      // Redirect to car list
+      router.push("/dashboard/autos")
     } catch (error) {
-      console.error("Error updating car:", error)
+      console.error("Error creating car:", error)
       setErrors({ submit: error instanceof Error ? error.message : "Er is een fout opgetreden" })
     } finally {
       setIsSubmitting(false)
@@ -278,79 +197,24 @@ export default function EditCarPage() {
     else if (selectedTab === "description") setSelectedTab("images")
   }
 
-  // Loading state
-  if (state.loading) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Header title="Auto bewerken" subtitle="Gegevens worden geladen..." />
-        <div className="flex-1 p-6 flex items-center justify-center">
-          <div className="text-center">
-            <RefreshCw className="h-12 w-12 animate-spin mx-auto mb-4 text-primary" />
-            <p className="text-muted-foreground">Auto gegevens worden geladen...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Error state
-  if (state.error || !state.car) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Header title="Auto bewerken" subtitle="Er is een fout opgetreden" />
-        <div className="flex-1 p-6 flex items-center justify-center">
-          <div className="text-center">
-            <AlertCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
-            <p className="text-red-600 mb-2">Kon auto gegevens niet laden</p>
-            <p className="text-sm text-muted-foreground mb-4">{state.error}</p>
-            <div className="flex gap-2 justify-center">
-              <Button onClick={fetchCarData}>
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Opnieuw proberen
-              </Button>
-              <Button variant="outline" onClick={() => router.back()}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Terug
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header 
-        title={`Bewerken: ${state.car.brand} ${state.car.model}`} 
-        subtitle={`Auto ID: #${state.car.id}`}
+        title="Nieuwe auto toevoegen" 
+        subtitle="Voeg een nieuwe auto toe aan de inventaris"
       />
       
       <div className="flex-1 p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <Button variant="outline" onClick={() => router.back()}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Terug naar details
-          </Button>
-          
-          <div className="flex gap-2">
-            <Badge variant="outline">
-              {state.car.vehicle_status === 'upcoming' ? 'Aankomend' :
-               state.car.vehicle_status === 'listed' ? 'Te Koop' :
-               state.car.vehicle_status === 'reserved' ? 'Gereserveerd' :
-               'Verkocht'}
-            </Badge>
-            <Badge variant="outline">
-              {state.car.post_status === 'published' ? 'Gepubliceerd' : 'Concept'}
-            </Badge>
-          </div>
-        </div>
+        <Button variant="outline" onClick={() => router.back()}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Terug naar overzicht
+        </Button>
 
         <Card>
           <CardHeader>
-            <CardTitle>Auto bewerken</CardTitle>
+            <CardTitle>Auto gegevens</CardTitle>
             <CardDescription>
-              Wijzig de gegevens van {state.car.brand} {state.car.model}
+              Vul de onderstaande gegevens in om een nieuwe auto toe te voegen
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -364,7 +228,7 @@ export default function EditCarPage() {
                     Afbeeldingen
                     {imagesPreviews.length > 0 && (
                       <Badge variant="secondary" className="ml-2">
-                        +{imagesPreviews.length}
+                        {imagesPreviews.length}
                       </Badge>
                     )}
                   </TabsTrigger>
@@ -402,55 +266,10 @@ export default function EditCarPage() {
                   </TabsContent>
 
                   <TabsContent value="images" className="space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Bestaande foto's</CardTitle>
-                          <CardDescription>
-                            {state.car.images?.all?.length || 0} foto's beschikbaar
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          {state.car.images?.all && state.car.images.all.length > 0 ? (
-                            <div className="grid grid-cols-2 gap-2">
-                              {state.car.images.all.map((image) => (
-                                <div key={image.id} className="relative aspect-video rounded-lg overflow-hidden">
-                                  <img
-                                    src={image.url}
-                                    alt="Car image"
-                                    className="w-full h-full object-cover"
-                                  />
-                                  {image.is_main && (
-                                    <Badge className="absolute top-2 left-2 bg-yellow-400 text-yellow-900">
-                                      Hoofdfoto
-                                    </Badge>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center py-8">
-                              <p className="text-muted-foreground">Geen bestaande foto's</p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                      
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Nieuwe foto's toevoegen</CardTitle>
-                          <CardDescription>
-                            Upload extra foto's voor deze auto
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <ImageUploadForm
-                            images={imagesPreviews}
-                            onImagesChange={setImagesPreviews}
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
+                    <ImageUploadForm
+                      images={imagesPreviews}
+                      onImagesChange={setImagesPreviews}
+                    />
                   </TabsContent>
 
                   <TabsContent value="description" className="space-y-6">

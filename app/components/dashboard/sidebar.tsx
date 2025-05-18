@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useAuth } from "@/app/contexts/AuthContext"
 import { cn } from "@/app/lib/utils"
 
 import {
@@ -25,7 +26,12 @@ interface SidebarProps {
 
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname()
+  const { user, logout } = useAuth()
   const [carsExpanded, setCarsExpanded] = useState(true)
+
+  const handleLogout = () => {
+    logout()
+  }
 
   const routes = [
     {
@@ -78,11 +84,13 @@ export function Sidebar({ className }: SidebarProps) {
         <div className="px-3 py-2">
           <div className="flex items-center gap-2">
             <Avatar>
-              <AvatarFallback>AB</AvatarFallback>
+              <AvatarFallback>
+                {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'AB'}
+              </AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium">Admin Gebruiker</p>
-              <p className="text-xs text-muted-foreground">admin@autoboomgaard.nl</p>
+              <p className="text-sm font-medium">{user?.name || 'Admin Gebruiker'}</p>
+              <p className="text-xs text-muted-foreground">{user?.email || 'admin@autoboomgaard.nl'}</p>
             </div>
           </div>
         </div>
@@ -151,12 +159,10 @@ export function Sidebar({ className }: SidebarProps) {
           <Button
             variant="ghost"
             className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-            asChild
+            onClick={handleLogout}
           >
-            <Link href="/">
-              <LogOut className="h-4 w-4" />
-              Uitloggen
-            </Link>
+            <LogOut className="h-4 w-4" />
+            Uitloggen
           </Button>
         </div>
       </div>
