@@ -42,6 +42,19 @@ export const authAPI = {
     })
   },
   
+  register: async (userData: {
+    name: string
+    email: string
+    password: string
+    password_confirmation: string
+    role?: 'verkoper'
+  }) => {
+    return apiClient('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    })
+  },
+  
   logout: async () => {
     return apiClient('/auth/logout', {
       method: 'POST',
@@ -165,7 +178,100 @@ export const carsAPI = {
   },
 }
 
+// Users API
+export const usersAPI = {
+  // Get all users with optional filters
+  getAll: async (params?: {
+    search?: string
+    role?: string
+    status?: string
+  }) => {
+    const searchParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value.toString())
+        }
+      })
+    }
+    
+    const queryString = searchParams.toString()
+    return apiClient(`/dashboard/users${queryString ? `?${queryString}` : ''}`)
+  },
+
+  // Get single user
+  getById: async (id: string | number) => {
+    return apiClient(`/dashboard/users/${id}`)
+  },
+
+  // Create new user
+  create: async (userData: UserData) => {
+    return apiClient('/dashboard/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    })
+  },
+
+  // Update user
+  update: async (id: string | number, userData: Partial<UserData>) => {
+    return apiClient(`/dashboard/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    })
+  },
+
+  // Delete user
+  delete: async (id: string | number) => {
+    return apiClient(`/dashboard/users/${id}`, {
+      method: 'DELETE',
+    })
+  },
+
+  // Activate user
+  activate: async (id: string | number) => {
+    return apiClient(`/dashboard/users/${id}/activate`, {
+      method: 'PATCH',
+    })
+  },
+
+  // Deactivate user
+  deactivate: async (id: string | number) => {
+    return apiClient(`/dashboard/users/${id}/deactivate`, {
+      method: 'PATCH',
+    })
+  },
+}
+
 // TypeScript Types
+export interface User {
+  id: number
+  name: string
+  email: string
+  role: 'admin' | 'verkoper'
+  status: 'active' | 'inactive'
+  active: boolean
+  email_verified_at?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface UserData {
+  name: string
+  email: string
+  password?: string
+  password_confirmation?: string
+  role: 'admin' | 'verkoper'
+  active?: boolean
+}
+
+export interface RegisterData {
+  name: string
+  email: string
+  password: string
+  password_confirmation: string
+  role?: 'verkoper'
+}
+
 export interface CarListItem {
   id: number
   brand: string
