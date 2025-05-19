@@ -183,17 +183,25 @@ export default function CarDetailPage() {
   }
 
   const images = state.car?.images?.all || []
-  const hasImages = images.length > 0
+  
+  // Sort images so that the main image comes first
+  const sortedImages = [...images].sort((a, b) => {
+    if (a.is_main && !b.is_main) return -1
+    if (!a.is_main && b.is_main) return 1
+    return 0
+  })
+  
+  const hasImages = sortedImages.length > 0
 
   const nextImage = () => {
     if (hasImages) {
-      setActiveImageIndex((prev) => (prev + 1) % images.length)
+      setActiveImageIndex((prev) => (prev + 1) % sortedImages.length)
     }
   }
 
   const prevImage = () => {
     if (hasImages) {
-      setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length)
+      setActiveImageIndex((prev) => (prev - 1 + sortedImages.length) % sortedImages.length)
     }
   }
 
@@ -505,11 +513,11 @@ export default function CarDetailPage() {
                     <div className="relative aspect-video w-full overflow-hidden rounded-lg cursor-pointer"
                          onClick={() => setIsImageDialogOpen(true)}>
                       <img
-                        src={images[activeImageIndex]?.url}
+                        src={sortedImages[activeImageIndex]?.url}
                         alt={`${car.brand} ${car.model}`}
                         className="h-full w-full object-cover hover:scale-105 transition-transform"
                       />
-                      {images[activeImageIndex]?.is_main && (
+                      {sortedImages[activeImageIndex]?.is_main && (
                         <Badge className="absolute top-2 left-2 bg-yellow-400 text-yellow-900">
                           <Star className="h-3 w-3 mr-1 fill-current" />
                           Hoofdfoto
@@ -524,7 +532,7 @@ export default function CarDetailPage() {
                             prevImage()
                           }}
                           className="h-8 w-8 rounded-full bg-background/80"
-                          disabled={images.length <= 1}
+                          disabled={sortedImages.length <= 1}
                         >
                           <ChevronLeft className="h-4 w-4" />
                         </Button>
@@ -536,20 +544,20 @@ export default function CarDetailPage() {
                             nextImage()
                           }}
                           className="h-8 w-8 rounded-full bg-background/80"
-                          disabled={images.length <= 1}
+                          disabled={sortedImages.length <= 1}
                         >
                           <ChevronRight className="h-4 w-4" />
                         </Button>
                       </div>
                       <div className="absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
-                        {activeImageIndex + 1} / {images.length}
+                        {activeImageIndex + 1} / {sortedImages.length}
                       </div>
                     </div>
                     
                     {/* Thumbnail Grid */}
-                    {images.length > 1 && (
+                    {sortedImages.length > 1 && (
                       <div className="grid grid-cols-3 gap-2">
-                        {images.map((image, index) => (
+                        {sortedImages.map((image, index) => (
                           <div
                             key={image.id}
                             className={`relative aspect-video cursor-pointer overflow-hidden rounded-md transition-all ${
@@ -655,11 +663,11 @@ export default function CarDetailPage() {
               {hasImages && (
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg">
                   <img
-                    src={images[activeImageIndex]?.url}
+                    src={sortedImages[activeImageIndex]?.url}
                     alt={`${car.brand} ${car.model}`}
                     className="h-full w-full object-contain"
                   />
-                  {images.length > 1 && (
+                  {sortedImages.length > 1 && (
                     <>
                       <Button
                         variant="outline"
@@ -680,7 +688,7 @@ export default function CarDetailPage() {
                     </>
                   )}
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full">
-                    {activeImageIndex + 1} / {images.length}
+                    {activeImageIndex + 1} / {sortedImages.length}
                   </div>
                 </div>
               )}

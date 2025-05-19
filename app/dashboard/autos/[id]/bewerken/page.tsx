@@ -7,7 +7,7 @@ import { Button } from "@/app/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Badge } from "@/app/components/ui/badge"
-import { ArrowLeft, Save, AlertCircle, RefreshCw } from "lucide-react"
+import { ArrowLeft, Save, AlertCircle, RefreshCw, Star, X } from "lucide-react"
 import { carsAPI, type CarData } from "@/app/lib/api"
 
 // Import form components
@@ -214,6 +214,65 @@ export default function EditCarPage() {
     return Object.keys(newErrors).length === 0
   }
 
+  // Image management handlers
+  const handleSetMainImage = useCallback(async (mediaId: number) => {
+    if (!state.car || isSubmitting) return
+
+    try {
+      setIsSubmitting(true)
+      await carsAPI.setMainImage(state.car.id!, mediaId)
+      
+      // Update local state to reflect the change
+      setState(prev => ({
+        ...prev,
+        car: prev.car ? {
+          ...prev.car,
+          images: {
+            ...prev.car.images,
+            all: prev.car.images?.all?.map(img => ({
+              ...img,
+              is_main: img.id === mediaId
+            })) || []
+          }
+        } : null
+      }))
+    } catch (error) {
+      console.error('Error setting main image:', error)
+      setErrors({ submit: error instanceof Error ? error.message : 'Kon hoofdfoto niet instellen' })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }, [state.car, isSubmitting])
+
+  const handleDeleteImage = useCallback(async (mediaId: number) => {
+    if (!state.car || isSubmitting) return
+
+    // Confirm deletion
+    if (!confirm('Weet je zeker dat je deze foto wilt verwijderen?')) return
+
+    try {
+      setIsSubmitting(true)
+      await carsAPI.deleteImage(state.car.id!, mediaId)
+      
+      // Update local state to remove the deleted image
+      setState(prev => ({
+        ...prev,
+        car: prev.car ? {
+          ...prev.car,
+          images: {
+            ...prev.car.images,
+            all: prev.car.images?.all?.filter(img => img.id !== mediaId) || []
+          }
+        } : null
+      }))
+    } catch (error) {
+      console.error('Error deleting image:', error)
+      setErrors({ submit: error instanceof Error ? error.message : 'Kon foto niet verwijderen' })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }, [state.car, isSubmitting])
+
   const handleSubmit = async () => {
     if (!validateForm()) {
       setSelectedTab("basic") // Go back to first tab if validation fails
@@ -407,21 +466,52 @@ export default function EditCarPage() {
                         <CardHeader>
                           <CardTitle>Bestaande foto's</CardTitle>
                           <CardDescription>
-                            {state.car.images?.all?.length || 0} foto's beschikbaar
+                            {state.car.images?.all?.length || 0} foto's beschikbaar - Klik op een foto om deze als hoofdfoto in te stellen
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
                           {state.car.images?.all && state.car.images.all.length > 0 ? (
                             <div className="grid grid-cols-2 gap-2">
                               {state.car.images.all.map((image) => (
-                                <div key={image.id} className="relative aspect-video rounded-lg overflow-hidden">
+                                <div key={image.id} className="relative aspect-video rounded-lg overflow-hidden group cursor-pointer">
                                   <img
                                     src={image.url}
                                     alt="Car image"
                                     className="w-full h-full object-cover"
                                   />
+                                  
+                                  {/* Hover overlay with actions */}
+                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="absolute top-2 right-2 flex gap-1">
+                                      <Button
+                                        type="button"
+                                        variant="secondary"
+                                        size="icon"
+                                        className="h-7 w-7"
+                                        onClick={() => handleSetMainImage(image.id)}
+                                        title="Instellen als hoofdfoto"
+                                        disabled={isSubmitting}
+                                      >
+                                        <Star className={`h-3 w-3 ${image.is_main ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="icon"
+                                        className="h-7 w-7"
+                                        onClick={() => handleDeleteImage(image.id)}
+                                        title="Foto verwijderen"
+                                        disabled={isSubmitting}
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Main image badge */}
                                   {image.is_main && (
                                     <Badge className="absolute top-2 left-2 bg-yellow-400 text-yellow-900">
+                                      <Star className="h-3 w-3 mr-1 fill-current" />
                                       Hoofdfoto
                                     </Badge>
                                   )}
