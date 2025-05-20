@@ -5,6 +5,7 @@
 The Auto Boomgaard Dashboard Frontend is a comprehensive Next.js application designed to provide administrators with a powerful interface for managing car inventory. Built with modern React patterns and TypeScript, it offers a seamless experience for car dealership management operations.
 
 **Key Features:**
+
 - Real-time car inventory management
 - Advanced image handling and galleries
 - Comprehensive car editing with modular forms
@@ -15,22 +16,26 @@ The Auto Boomgaard Dashboard Frontend is a comprehensive Next.js application des
 ## 🏗️ **Architecture & Technologies**
 
 ### **Frontend Framework**
+
 - **Next.js 14.1.0** - React framework with App Router
 - **React 18** - Latest React with concurrent features
 - **TypeScript 5** - Type-safe development environment
 
 ### **UI & Styling**
+
 - **Tailwind CSS** - Utility-first CSS framework
 - **Radix UI** - Headless UI components for accessibility
 - **shadcn/ui** - Component library built on Radix UI
 - **Lucide React** - Icon library with 300+ icons
 
 ### **State Management & Forms**
+
 - **React Hooks** - Local state management
 - **React Hook Form** - Form state management
 - **Zod** - Schema validation
 
 ### **Additional Libraries**
+
 - **React Dropzone** - File upload with drag-and-drop
 - **clsx** & **tailwind-merge** - Conditional className management
 - **date-fns** - Date manipulation utilities
@@ -86,6 +91,7 @@ The Auto Boomgaard Dashboard Frontend is a comprehensive Next.js application des
 ## 🔧 **Component Architecture**
 
 ### **1. Page Components**
+
 Located in `/app/dashboard/`, these define routes and handle page-level logic:
 
 - **`page.tsx`** - Dashboard overview with statistics
@@ -95,11 +101,13 @@ Located in `/app/dashboard/`, these define routes and handle page-level logic:
 - **`autos/toevoegen/page.tsx`** - Car creation form
 
 ### **2. Layout Components**
+
 - **`layout.tsx`** - Dashboard shell with authentication
 - **`header.tsx`** - Page header with title and actions
 - **`sidebar.tsx`** - Navigation sidebar
 
 ### **3. Form Components**
+
 Modular form components for car management:
 
 ```typescript
@@ -113,7 +121,9 @@ Modular form components for car management:
 ```
 
 ### **4. UI Components**
+
 Reusable shadcn/ui components with consistent styling:
+
 - Form controls (Input, Select, Textarea, Checkbox)
 - Layout (Card, Tabs, Dialog, Separator)
 - Navigation (Button, Badge)
@@ -150,46 +160,48 @@ export const carsAPI = {
 ```typescript
 // Car list item (optimized for listings)
 interface CarListItem {
-  id: number
-  brand: string
-  model: string
-  price: string
+  id: number;
+  brand: string;
+  model: string;
+  price: string;
   // ... basic fields
-  main_image?: string
+  main_image?: string;
 }
 
 // Full car data (for details and editing)
 interface CarData extends CarListItem {
-  specifications?: Record<string, string>
-  highlights?: { content: string }
+  specifications?: Record<string, string>;
+  highlights?: { content: string };
   options_accessories?: {
     data: {
-      exterieur: string[]
-      infotainment: string[]
-      interieur_comfort: string[]
-      extra: string[]
-    }
-  }
+      exterieur: string[];
+      infotainment: string[];
+      interieur_comfort: string[];
+      extra: string[];
+    };
+  };
   images?: {
-    main?: string
+    main?: string;
     all?: Array<{
-      id: number
-      url: string
-      is_main: boolean
-    }>
-  }
+      id: number;
+      url: string;
+      is_main: boolean;
+    }>;
+  };
 }
 ```
 
 ## ✨ **Key Features Implemented**
 
 ### **1. Dashboard Overview**
+
 - **Real-time statistics** calculation from API data
 - **Recent cars display** with image previews
 - **Quick actions** for adding new cars
 - **Status breakdown** (published vs drafts, vehicle statuses)
 
 ### **2. Car Listing (`/dashboard/autos`)**
+
 - **Advanced filtering** by vehicle status, post status, and search
 - **Pagination** with configurable items per page
 - **Optimized data loading** (only main images in list view)
@@ -197,6 +209,7 @@ interface CarData extends CarListItem {
 - **Real-time status badges**
 
 ### **3. Car Detail View (`/dashboard/autos/[id]`)**
+
 - **Comprehensive information display** in organized tabs
 - **Image gallery** with thumbnail navigation and full-screen modal
 - **Status management** with inline editing
@@ -205,6 +218,7 @@ interface CarData extends CarListItem {
 - **Options and accessories** categorized display
 
 ### **4. Car Form System (Add/Edit)**
+
 - **Modular form components** (each under 400 lines)
 - **Progressive form navigation** with validation
 - **Image upload** with drag-and-drop support
@@ -214,6 +228,7 @@ interface CarData extends CarListItem {
 - **Auto-save draft concept**
 
 ### **5. Image Management**
+
 - **Multiple image upload** with progress indication
 - **Drag-and-drop interface** for easy uploading
 - **Image preview** with thumbnail grid
@@ -223,6 +238,7 @@ interface CarData extends CarListItem {
 - **Full-screen image viewer**
 
 ### **6. Authentication & Security**
+
 - **Token-based authentication** with Laravel Sanctum
 - **Automatic token refresh** handling
 - **Protected routes** with redirect to login
@@ -232,41 +248,45 @@ interface CarData extends CarListItem {
 ## 📊 **State Management Patterns**
 
 ### **1. Local State with useState**
+
 ```typescript
 // Component-level state for forms and UI
-const [loading, setLoading] = useState(false)
-const [errors, setErrors] = useState<FormErrors>({})
-const [formData, setFormData] = useState<CarData>(initialData)
+const [loading, setLoading] = useState(false);
+const [errors, setErrors] = useState<FormErrors>({});
+const [formData, setFormData] = useState<CarData>(initialData);
 ```
 
 ### **2. Custom Hooks for API Calls**
+
 ```typescript
 // Reusable data fetching patterns
 const useCar = (id: string) => {
-  const [car, setCar] = useState<CarData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [car, setCar] = useState<CarData | null>(null);
+  const [loading, setLoading] = useState(true);
   // ... fetch logic
-  return { car, loading, error, refetch }
-}
+  return { car, loading, error, refetch };
+};
 ```
 
 ### **3. Context for Global State**
+
 ```typescript
 // Authentication context
 export const AuthContext = createContext<{
-  isAuthenticated: boolean
-  user: User | null
-  login: (credentials) => Promise<void>
-  logout: () => void
-}>()
+  isAuthenticated: boolean;
+  user: User | null;
+  login: (credentials) => Promise<void>;
+  logout: () => void;
+}>();
 ```
 
 ## 🎨 **Design System**
 
 ### **Color Palette**
+
 - **Primary**: Custom brand colors for actions and highlights
 - **Secondary**: Muted tones for supporting elements
-- **Status Colors**: 
+- **Status Colors**:
   - Green: Listed/Published/Success
   - Yellow: Reserved/Warning
   - Blue: Sold/Information
@@ -274,11 +294,13 @@ export const AuthContext = createContext<{
   - Gray: Upcoming/Draft
 
 ### **Typography**
+
 - **Headings**: Bold, clear hierarchy
 - **Body**: Readable sans-serif font
 - **Code**: Monospace for technical data
 
 ### **Spacing & Layout**
+
 - **Consistent spacing** using Tailwind's spacing scale
 - **Card-based layouts** for content organization
 - **Responsive grid systems** for different screen sizes
@@ -287,12 +309,14 @@ export const AuthContext = createContext<{
 ## 📱 **Responsive Design**
 
 ### **Breakpoints**
+
 - **Mobile**: `sm` (640px+) - Stacked layouts, mobile navigation
 - **Tablet**: `md` (768px+) - Grid adjustments, compact layouts
 - **Desktop**: `lg` (1024px+) - Full layouts, multiple columns
 - **Large Desktop**: `xl` (1280px+) - Expanded content areas
 
 ### **Mobile Optimizations**
+
 - **Responsive navigation** with mobile menu
 - **Touch-friendly buttons** and form controls
 - **Optimized image loading** for mobile networks
@@ -301,18 +325,21 @@ export const AuthContext = createContext<{
 ## 🚀 **Performance Optimizations**
 
 ### **1. Data Loading**
+
 - **Optimized API responses** (CarListResource vs CarResource)
 - **Pagination** to limit data transfer
 - **Image optimization** with proper sizing
 - **Lazy loading** for non-critical content
 
 ### **2. Component Optimizations**
+
 - **React.memo** for expensive components
 - **useCallback** for event handlers
 - **useMemo** for computed values
 - **Proper dependency arrays** in useEffect
 
 ### **3. Bundle Optimization**
+
 - **Code splitting** with Next.js automatic splitting
 - **Tree shaking** to remove unused code
 - **Dynamic imports** for large libraries
@@ -321,6 +348,7 @@ export const AuthContext = createContext<{
 ## 🛠️ **Development Workflow**
 
 ### **Setup Instructions**
+
 ```bash
 # 1. Clone and install
 cd /path/to/dashboard-frontend
@@ -329,13 +357,14 @@ npm install
 # 2. Environment setup
 cp .env.example .env.local
 # Edit .env.local with your API URL
-echo "NEXT_PUBLIC_API_URL=http://127.0.0.1:8001" > .env.local
+echo "NEXT_PUBLIC_API_URL=http://127.0.0.1:8000" > .env.local
 
 # 3. Start development server
 npm run dev
 ```
 
 ### **Available Scripts**
+
 ```bash
 npm run dev     # Start development server
 npm run build   # Build for production
@@ -345,6 +374,7 @@ npm run type-check # Run TypeScript checks
 ```
 
 ### **Code Quality**
+
 - **TypeScript** strict mode enabled
 - **ESLint** with Next.js configuration
 - **Prettier** for code formatting
@@ -353,31 +383,34 @@ npm run type-check # Run TypeScript checks
 ## 🧪 **Error Handling**
 
 ### **API Error Handling**
+
 ```typescript
 try {
-  const response = await carsAPI.getById(id)
-  setState({ data: response.data, loading: false, error: null })
+  const response = await carsAPI.getById(id);
+  setState({ data: response.data, loading: false, error: null });
 } catch (error) {
-  setState({ 
-    data: null, 
-    loading: false, 
-    error: error instanceof Error ? error.message : 'Unknown error'
-  })
+  setState({
+    data: null,
+    loading: false,
+    error: error instanceof Error ? error.message : "Unknown error",
+  });
 }
 ```
 
 ### **Form Validation**
+
 ```typescript
 const validateForm = (): boolean => {
-  const newErrors: FormErrors = {}
-  if (!basicData.brand.trim()) newErrors.brand = "Merk is verplicht"
+  const newErrors: FormErrors = {};
+  if (!basicData.brand.trim()) newErrors.brand = "Merk is verplicht";
   // ... more validations
-  setErrors(newErrors)
-  return Object.keys(newErrors).length === 0
-}
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 ```
 
 ### **User Feedback**
+
 - **Loading states** with spinners and skeleton screens
 - **Error boundaries** to catch React errors
 - **Success messages** after successful operations
@@ -386,18 +419,21 @@ const validateForm = (): boolean => {
 ## 📈 **Future Enhancements**
 
 ### **Short-term (Next Sprint)**
+
 - **Bulk operations** for multiple cars
 - **Advanced filtering** with date ranges and multiple criteria
 - **Export functionality** (CSV, PDF reports)
 - **Image optimization** with automatic compression
 
 ### **Medium-term (Next Quarter)**
+
 - **Real-time updates** with WebSocket integration
 - **Advanced analytics** dashboard with charts
 - **User management** interface
 - **Audit logs** for tracking changes
 
 ### **Long-term (Future Releases)**
+
 - **Progressive Web App** capabilities
 - **Offline support** with service workers
 - **Advanced image editor** with cropping and filters
@@ -406,9 +442,10 @@ const validateForm = (): boolean => {
 ## 🔧 **Configuration**
 
 ### **Environment Variables**
+
 ```env
 # Required
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8001
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
 
 # Optional
 NEXT_PUBLIC_MAX_FILE_SIZE=10485760  # 10MB
@@ -416,6 +453,7 @@ NEXT_PUBLIC_ALLOWED_IMAGE_TYPES=jpg,jpeg,png,webp
 ```
 
 ### **API Configuration**
+
 ```typescript
 // Customizable API settings
 const API_CONFIG = {
@@ -424,12 +462,13 @@ const API_CONFIG = {
   retries: 3,
   defaultPerPage: 15,
   maxUploadSize: 10 * 1024 * 1024, // 10MB
-}
+};
 ```
 
 ## 📝 **Best Practices**
 
 ### **Component Design**
+
 1. **Single Responsibility** - Each component has one clear purpose
 2. **Props Interface** - Well-defined TypeScript interfaces
 3. **Error Boundaries** - Graceful error handling
@@ -437,12 +476,14 @@ const API_CONFIG = {
 5. **Performance** - Memoization where appropriate
 
 ### **State Management**
+
 1. **Local State First** - Use local state when possible
 2. **Lift State Up** - Only when needed by multiple components
 3. **Derived State** - Calculate from existing state when possible
 4. **Immutable Updates** - Always create new objects/arrays
 
 ### **API Integration**
+
 1. **Consistent Error Handling** - Standardized error responses
 2. **Loading States** - Always show loading indicators
 3. **Optimistic Updates** - Update UI before server confirmation
@@ -451,12 +492,14 @@ const API_CONFIG = {
 ## 🐛 **Known Issues & Limitations**
 
 ### **Current Limitations**
+
 1. **File Upload Size** - Limited to 10MB per image
 2. **Browser Support** - Modern browsers only (ES2020+)
 3. **Offline Mode** - No offline functionality yet
 4. **Real-time Updates** - Requires manual refresh for updates
 
 ### **Planned Fixes**
+
 1. **Image Compression** - Automatic client-side compression
 2. **Progressive Loading** - Better loading experience
 3. **Error Recovery** - Automatic retry mechanisms
@@ -470,9 +513,9 @@ const API_CONFIG = {
 **TypeScript**: 5.x
 
 **Development Server**: `http://localhost:3000`  
-**API Integration**: `http://127.0.0.1:8001`  
+**API Integration**: `http://127.0.0.1:8000`  
 **Documentation**: This file (claude_dashboard_frontend.md)
 
 ---
 
-*This documentation covers the complete frontend implementation for Auto Boomgaard's car dealership management dashboard. The application provides a modern, type-safe, and user-friendly interface for managing car inventory with comprehensive CRUD operations, advanced image handling, and real-time status management.*
+_This documentation covers the complete frontend implementation for Auto Boomgaard's car dealership management dashboard. The application provides a modern, type-safe, and user-friendly interface for managing car inventory with comprehensive CRUD operations, advanced image handling, and real-time status management._

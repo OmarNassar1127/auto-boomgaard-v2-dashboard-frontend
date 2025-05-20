@@ -52,7 +52,7 @@ npm run dev
 yarn dev
 ```
 
-4. Open [http://127.0.0.1:8001](http://127.0.0.1:8001) in je browser.
+4. Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in je browser.
 
 ## Projectstructuur
 
