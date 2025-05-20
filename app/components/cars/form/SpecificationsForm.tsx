@@ -1,5 +1,4 @@
 import { Input } from "@/app/components/ui/input"
-import { InputWithUnit } from "@/app/components/ui/input-with-unit"
 import { Label } from "@/app/components/ui/label"
 
 interface SpecificationsFormProps {
@@ -22,19 +21,6 @@ interface SpecificationsFormProps {
 }
 
 export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) {
-  // Create a handler for our InputWithUnit component
-  const handleUnitInput = (name: string, value: string) => {
-    // Create a synthetic event to pass to the onChange handler
-    const syntheticEvent = {
-      target: {
-        name,
-        value: value
-      }
-    } as React.ChangeEvent<HTMLInputElement>;
-    
-    onChange(syntheticEvent);
-  };
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -62,40 +48,34 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         
         <div className="space-y-2">
           <Label htmlFor="torque">Maximale koppel</Label>
-          <InputWithUnit
+          <Input
             id="torque"
             name="torque"
-            placeholder="320"
-            unit="nm"
-            value={data.torque.replace(/[^0-9.,]/g, '')}
+            placeholder="320 nm"
+            value={data.torque}
             onChange={onChange}
-            onValueChange={(value) => handleUnitInput("torque", value + " nm")}
           />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="acceleration">Acceleratie (0-100km/h)</Label>
-          <InputWithUnit
+          <Input
             id="acceleration"
             name="acceleration"
-            placeholder="7.5"
-            unit="s"
-            value={data.acceleration.replace(/[^0-9.,]/g, '')}
+            placeholder="7.5s"
+            value={data.acceleration}
             onChange={onChange}
-            onValueChange={(value) => handleUnitInput("acceleration", value + "s")}
           />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="wheelbase">Wielbasis</Label>
-          <InputWithUnit
+          <Input
             id="wheelbase"
             name="wheelbase"
-            placeholder="282"
-            unit="cm"
-            value={data.wheelbase.replace(/[^0-9.,]/g, '')}
+            placeholder="282 cm"
+            value={data.wheelbase}
             onChange={onChange}
-            onValueChange={(value) => handleUnitInput("wheelbase", value + " cm")}
           />
         </div>
         
@@ -145,53 +125,45 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         
         <div className="space-y-2">
           <Label htmlFor="top_speed">Topsnelheid</Label>
-          <InputWithUnit
+          <Input
             id="top_speed"
             name="top_speed"
-            placeholder="241"
-            unit="km/h"
-            value={data.top_speed.replace(/[^0-9.,]/g, '')}
+            placeholder="241km/h"
+            value={data.top_speed}
             onChange={onChange}
-            onValueChange={(value) => handleUnitInput("top_speed", value + "km/h")}
           />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="tank_capacity">Tankinhoud</Label>
-          <InputWithUnit
+          <Input
             id="tank_capacity"
             name="tank_capacity"
-            placeholder="54"
-            unit="L"
-            value={data.tank_capacity.replace(/[^0-9.,]/g, '')}
+            placeholder="54 L"
+            value={data.tank_capacity}
             onChange={onChange}
-            onValueChange={(value) => handleUnitInput("tank_capacity", value + " L")}
           />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="engine_capacity">Cilinderinhoud</Label>
-          <InputWithUnit
+          <Input
             id="engine_capacity"
             name="engine_capacity"
-            placeholder="1984"
-            unit="cc"
-            value={data.engine_capacity.replace(/[^0-9.,]/g, '')}
+            placeholder="1984 cc"
+            value={data.engine_capacity}
             onChange={onChange}
-            onValueChange={(value) => handleUnitInput("engine_capacity", value + " cc")}
           />
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="weight">Gewicht (leeg)</Label>
-          <InputWithUnit
+          <Input
             id="weight"
             name="weight"
-            placeholder="1460"
-            unit="kg"
-            value={data.weight.replace(/[^0-9.,]/g, '')}
+            placeholder="1460 kg"
+            value={data.weight}
             onChange={onChange}
-            onValueChange={(value) => handleUnitInput("weight", value + " kg")}
           />
         </div>
       </div>
