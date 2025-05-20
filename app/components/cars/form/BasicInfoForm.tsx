@@ -1,4 +1,5 @@
 import { Input } from "@/app/components/ui/input"
+import { InputWithUnit } from "@/app/components/ui/input-with-unit"
 import { Label } from "@/app/components/ui/label"
 import {
   Select,
@@ -60,12 +61,23 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange }: BasicI
         
         <div className="space-y-2">
           <Label htmlFor="price">Prijs *</Label>
-          <Input
+          <InputWithUnit
             id="price"
             name="price"
-            placeholder="€54.990,00"
-            value={data.price}
+            placeholder="54.990,00"
+            unit="€"
+            unitPosition="prefix"
+            value={data.price.replace(/[^0-9.,]/g, '')}
             onChange={onChange}
+            onValueChange={(value) => {
+              const syntheticEvent = {
+                target: {
+                  name: "price",
+                  value: "€" + value
+                }
+              } as React.ChangeEvent<HTMLInputElement>;
+              onChange(syntheticEvent);
+            }}
             className={errors.price ? "border-red-500" : ""}
           />
           {errors.price && <p className="text-sm text-red-500">{errors.price}</p>}
@@ -84,12 +96,22 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange }: BasicI
         
         <div className="space-y-2">
           <Label htmlFor="mileage">Kilometerstand *</Label>
-          <Input
+          <InputWithUnit
             id="mileage"
             name="mileage"
-            placeholder="83.500 km"
-            value={data.mileage}
+            placeholder="83.500"
+            unit="km"
+            value={data.mileage.replace(/[^0-9.,]/g, '')}
             onChange={onChange}
+            onValueChange={(value) => {
+              const syntheticEvent = {
+                target: {
+                  name: "mileage",
+                  value: value + " km"
+                }
+              } as React.ChangeEvent<HTMLInputElement>;
+              onChange(syntheticEvent);
+            }}
             className={errors.mileage ? "border-red-500" : ""}
           />
           {errors.mileage && <p className="text-sm text-red-500">{errors.mileage}</p>}
@@ -163,12 +185,22 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange }: BasicI
         
         <div className="space-y-2">
           <Label htmlFor="power">Vermogen *</Label>
-          <Input
+          <InputWithUnit
             id="power"
             name="power"
-            placeholder="367 pk"
-            value={data.power}
+            placeholder="367"
+            unit="pk"
+            value={data.power.replace(/[^0-9.,]/g, '')}
             onChange={onChange}
+            onValueChange={(value) => {
+              const syntheticEvent = {
+                target: {
+                  name: "power",
+                  value: value + " pk"
+                }
+              } as React.ChangeEvent<HTMLInputElement>;
+              onChange(syntheticEvent);
+            }}
             className={errors.power ? "border-red-500" : ""}
           />
           {errors.power && <p className="text-sm text-red-500">{errors.power}</p>}
