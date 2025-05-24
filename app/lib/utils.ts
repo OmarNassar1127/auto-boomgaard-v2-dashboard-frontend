@@ -24,3 +24,33 @@ export function formatDate(dateString: string): string {
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
+
+/**
+ * Format a number as Dutch currency display
+ */
+export function formatPrice(price: number): string {
+  return `€${price.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+/**
+ * Parse Dutch currency string to number
+ */
+export function parsePrice(priceString: string): number {
+  const cleanPrice = priceString.replace(/[^\d,]/g, '').replace(',', '.');
+  return parseFloat(cleanPrice) || 0;
+}
+
+/**
+ * Format number with Dutch thousands separator
+ */
+export function formatNumber(num: number): string {
+  return num.toLocaleString('nl-NL');
+}
+
+/**
+ * Parse Dutch number string to integer
+ */
+export function parseNumber(numString: string): number {
+  const cleanNum = numString.replace(/[^\d]/g, '');
+  return parseInt(cleanNum) || 0;
+}

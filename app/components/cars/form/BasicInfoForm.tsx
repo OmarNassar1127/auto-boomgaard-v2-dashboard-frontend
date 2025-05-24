@@ -1,5 +1,6 @@
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
+import { NumberInputWithSuffix, PriceInput } from "@/app/components/ui/number-input"
 import {
   Select,
   SelectContent,
@@ -12,23 +13,24 @@ interface BasicInfoFormProps {
   data: {
     brand: string
     model: string
-    price: string
+    price: number
     tax_info: string
-    mileage: string
-    year: string
+    mileage: number
+    year: number
     color: string
     transmission: string
     fuel: string
-    power: string
+    power: number
     vehicle_status: 'sold' | 'listed' | 'reserved' | 'upcoming'
     post_status: 'draft' | 'published'
   }
   errors: Record<string, string>
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onSelectChange: (name: string, value: string) => void
+  onNumberChange: (name: string, value: number) => void
 }
 
-export function BasicInfoForm({ data, errors, onChange, onSelectChange }: BasicInfoFormProps) {
+export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumberChange }: BasicInfoFormProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -60,12 +62,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange }: BasicI
         
         <div className="space-y-2">
           <Label htmlFor="price">Prijs *</Label>
-          <Input
+          <PriceInput
             id="price"
-            name="price"
-            placeholder="€54.990,00"
+            placeholder="50000"
             value={data.price}
-            onChange={onChange}
+            onValueChange={(value) => onNumberChange('price', value)}
             className={errors.price ? "border-red-500" : ""}
           />
           {errors.price && <p className="text-sm text-red-500">{errors.price}</p>}
@@ -84,12 +85,14 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange }: BasicI
         
         <div className="space-y-2">
           <Label htmlFor="mileage">Kilometerstand *</Label>
-          <Input
+          <NumberInputWithSuffix
             id="mileage"
-            name="mileage"
-            placeholder="83.500 km"
+            placeholder="83.500"
             value={data.mileage}
-            onChange={onChange}
+            onValueChange={(value) => onNumberChange('mileage', value)}
+            suffix="km"
+            formatValue={(value) => value.toLocaleString('nl-NL')}
+            parseValue={(value) => parseInt(value.replace(/[^\d]/g, '')) || 0}
             className={errors.mileage ? "border-red-500" : ""}
           />
           {errors.mileage && <p className="text-sm text-red-500">{errors.mileage}</p>}
@@ -97,12 +100,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange }: BasicI
         
         <div className="space-y-2">
           <Label htmlFor="year">Bouwjaar *</Label>
-          <Input
+          <NumberInputWithSuffix
             id="year"
-            name="year"
             placeholder="2022"
             value={data.year}
-            onChange={onChange}
+            onValueChange={(value) => onNumberChange('year', value)}
             className={errors.year ? "border-red-500" : ""}
           />
           {errors.year && <p className="text-sm text-red-500">{errors.year}</p>}
@@ -163,12 +165,12 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange }: BasicI
         
         <div className="space-y-2">
           <Label htmlFor="power">Vermogen *</Label>
-          <Input
+          <NumberInputWithSuffix
             id="power"
-            name="power"
-            placeholder="367 pk"
+            placeholder="367"
             value={data.power}
-            onChange={onChange}
+            onValueChange={(value) => onNumberChange('power', value)}
+            suffix="pk"
             className={errors.power ? "border-red-500" : ""}
           />
           {errors.power && <p className="text-sm text-red-500">{errors.power}</p>}

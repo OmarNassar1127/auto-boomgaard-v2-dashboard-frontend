@@ -21,6 +21,31 @@ interface SpecificationsFormProps {
 }
 
 export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) {
+  // Helper function to handle changes with unit suffixes
+  const handleUnitChange = (name: string, suffix: string) => {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      const cleanValue = value.replace(/[^\d.,]/g, '') // Keep only numbers, dots, and commas
+      
+      // Create synthetic event with unit appended
+      const syntheticEvent = {
+        ...e,
+        target: {
+          ...e.target,
+          name,
+          value: cleanValue ? `${cleanValue} ${suffix}` : ''
+        }
+      }
+      onChange(syntheticEvent as React.ChangeEvent<HTMLInputElement>)
+    }
+  }
+
+  // Helper function to get display value (remove units for input)
+  const getDisplayValue = (value: string): string => {
+    if (!value) return ''
+    // Remove common units from display value
+    return value.replace(/\s*(nm|s|cm|km\/h|L|cc|kg)\s*$/i, '')
+  }
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -48,35 +73,53 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         
         <div className="space-y-2">
           <Label htmlFor="torque">Maximale koppel</Label>
-          <Input
-            id="torque"
-            name="torque"
-            placeholder="320 nm"
-            value={data.torque}
-            onChange={onChange}
-          />
+          <div className="relative">
+            <Input
+              id="torque"
+              name="torque"
+              placeholder="320"
+              value={getDisplayValue(data.torque)}
+              onChange={handleUnitChange('torque', 'nm')}
+              className="pr-12"
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+              nm
+            </div>
+          </div>
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="acceleration">Acceleratie (0-100km/h)</Label>
-          <Input
-            id="acceleration"
-            name="acceleration"
-            placeholder="7.5s"
-            value={data.acceleration}
-            onChange={onChange}
-          />
+          <div className="relative">
+            <Input
+              id="acceleration"
+              name="acceleration"
+              placeholder="7.5"
+              value={getDisplayValue(data.acceleration)}
+              onChange={handleUnitChange('acceleration', 's')}
+              className="pr-12"
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+              s
+            </div>
+          </div>
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="wheelbase">Wielbasis</Label>
-          <Input
-            id="wheelbase"
-            name="wheelbase"
-            placeholder="282 cm"
-            value={data.wheelbase}
-            onChange={onChange}
-          />
+          <div className="relative">
+            <Input
+              id="wheelbase"
+              name="wheelbase"
+              placeholder="282"
+              value={getDisplayValue(data.wheelbase)}
+              onChange={handleUnitChange('wheelbase', 'cm')}
+              className="pr-12"
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+              cm
+            </div>
+          </div>
         </div>
         
         <div className="space-y-2">
@@ -125,46 +168,70 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         
         <div className="space-y-2">
           <Label htmlFor="top_speed">Topsnelheid</Label>
-          <Input
-            id="top_speed"
-            name="top_speed"
-            placeholder="241km/h"
-            value={data.top_speed}
-            onChange={onChange}
-          />
+          <div className="relative">
+            <Input
+              id="top_speed"
+              name="top_speed"
+              placeholder="241"
+              value={getDisplayValue(data.top_speed)}
+              onChange={handleUnitChange('top_speed', 'km/h')}
+              className="pr-16"
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+              km/h
+            </div>
+          </div>
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="tank_capacity">Tankinhoud</Label>
-          <Input
-            id="tank_capacity"
-            name="tank_capacity"
-            placeholder="54 L"
-            value={data.tank_capacity}
-            onChange={onChange}
-          />
+          <div className="relative">
+            <Input
+              id="tank_capacity"
+              name="tank_capacity"
+              placeholder="54"
+              value={getDisplayValue(data.tank_capacity)}
+              onChange={handleUnitChange('tank_capacity', 'L')}
+              className="pr-12"
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+              L
+            </div>
+          </div>
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="engine_capacity">Cilinderinhoud</Label>
-          <Input
-            id="engine_capacity"
-            name="engine_capacity"
-            placeholder="1984 cc"
-            value={data.engine_capacity}
-            onChange={onChange}
-          />
+          <div className="relative">
+            <Input
+              id="engine_capacity"
+              name="engine_capacity"
+              placeholder="1984"
+              value={getDisplayValue(data.engine_capacity)}
+              onChange={handleUnitChange('engine_capacity', 'cc')}
+              className="pr-12"
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+              cc
+            </div>
+          </div>
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="weight">Gewicht (leeg)</Label>
-          <Input
-            id="weight"
-            name="weight"
-            placeholder="1460 kg"
-            value={data.weight}
-            onChange={onChange}
-          />
+          <div className="relative">
+            <Input
+              id="weight"
+              name="weight"
+              placeholder="1460"
+              value={getDisplayValue(data.weight)}
+              onChange={handleUnitChange('weight', 'kg')}
+              className="pr-12"
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+              kg
+            </div>
+          </div>
         </div>
       </div>
     </div>

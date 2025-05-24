@@ -147,13 +147,13 @@ export default function CarsPage() {
     fetchCars(page)
   }
 
-  const formatCurrency = (price: string): string => {
+  const formatCurrency = (price: string | number): string => {
     // If already formatted with €, return as is
-    if (price.includes('€')) return price
+    if (typeof price === 'string' && price.includes('€')) return price
     
     // Try to parse and format
-    const numericPrice = parseFloat(price.replace(/[^0-9.-]/g, ''))
-    if (isNaN(numericPrice)) return price
+    const numericPrice = typeof price === 'number' ? price : parseFloat(price.toString().replace(/[^0-9.-]/g, ''))
+    if (isNaN(numericPrice)) return price.toString()
     
     return new Intl.NumberFormat('nl-NL', {
       style: 'currency',
@@ -161,6 +161,12 @@ export default function CarsPage() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(numericPrice)
+  }
+
+  const formatNumber = (num: number | string): string => {
+    const number = typeof num === 'string' ? parseInt(num) : num
+    if (isNaN(number)) return num.toString()
+    return number.toLocaleString('nl-NL')
   }
 
   const getVehicleStatusBadge = (status: string) => {
@@ -382,7 +388,7 @@ export default function CarsPage() {
                         {formatCurrency(car.price)}
                       </TableCell>
                       <TableCell>{car.year}</TableCell>
-                      <TableCell>{car.mileage}</TableCell>
+                      <TableCell>{formatNumber(car.mileage)} km</TableCell>
                       <TableCell>
                         {getVehicleStatusBadge(car.vehicle_status)}
                       </TableCell>

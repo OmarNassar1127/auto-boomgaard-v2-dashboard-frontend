@@ -103,6 +103,12 @@ export default function DashboardPage() {
     }).format(amount)
   }
 
+  const formatNumber = (num: number | string): string => {
+    const number = typeof num === 'string' ? parseInt(num) : num
+    if (isNaN(number)) return num.toString()
+    return number.toLocaleString('nl-NL')
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -239,7 +245,7 @@ export default function DashboardPage() {
                         <div>
                           <h3 className="font-semibold">{car.brand} {car.model}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {car.year} • {car.mileage}
+                            {car.year} • {formatNumber(car.mileage)} km
                           </p>
                         </div>
                         <span className="font-bold text-primary">

@@ -48,14 +48,14 @@ export default function EditCarPage() {
   const [basicData, setBasicData] = useState({
     brand: "",
     model: "",
-    price: "",
+    price: 0,
     tax_info: "incl. BTW",
-    mileage: "",
-    year: "",
+    mileage: 0,
+    year: new Date().getFullYear(),
     color: "",
     transmission: "",
     fuel: "",
-    power: "",
+    power: 0,
     vehicle_status: "upcoming" as const,
     post_status: "draft" as const,
   })
@@ -100,14 +100,14 @@ export default function EditCarPage() {
       setBasicData({
         brand: car.brand || "",
         model: car.model || "",
-        price: car.price || "",
+        price: car.price || 0,
         tax_info: car.tax_info || "incl. BTW",
-        mileage: car.mileage || "",
-        year: car.year || "",
+        mileage: car.mileage || 0,
+        year: car.year || new Date().getFullYear(),
         color: car.color || "",
         transmission: car.transmission || "",
         fuel: car.fuel || "",
-        power: car.power || "",
+        power: car.power || 0,
         vehicle_status: car.vehicle_status || "upcoming",
         post_status: car.post_status || "draft",
       })
@@ -180,6 +180,21 @@ export default function EditCarPage() {
     }))
   }, [])
 
+  const handleNumberChange = useCallback((name: string, value: number) => {
+    setBasicData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors[name]
+        return newErrors
+      })
+    }
+  }, [errors])
+
   const handleSpecificationChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setSpecifications((prev) => ({
@@ -202,13 +217,13 @@ export default function EditCarPage() {
     // Validate required basic fields
     if (!basicData.brand.trim()) newErrors.brand = "Merk is verplicht"
     if (!basicData.model.trim()) newErrors.model = "Model is verplicht"
-    if (!basicData.price.trim()) newErrors.price = "Prijs is verplicht"
-    if (!basicData.mileage.trim()) newErrors.mileage = "Kilometerstand is verplicht"
-    if (!basicData.year.trim()) newErrors.year = "Bouwjaar is verplicht"
+    if (!basicData.price || basicData.price <= 0) newErrors.price = "Prijs is verplicht"
+    if (!basicData.mileage || basicData.mileage < 0) newErrors.mileage = "Kilometerstand is verplicht"
+    if (!basicData.year || basicData.year < 1900) newErrors.year = "Bouwjaar is verplicht"
     if (!basicData.color.trim()) newErrors.color = "Kleur is verplicht"
     if (!basicData.transmission.trim()) newErrors.transmission = "Transmissie is verplicht"
     if (!basicData.fuel.trim()) newErrors.fuel = "Brandstoftype is verplicht"
-    if (!basicData.power.trim()) newErrors.power = "Vermogen is verplicht"
+    if (!basicData.power || basicData.power <= 0) newErrors.power = "Vermogen is verplicht"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -437,6 +452,7 @@ export default function EditCarPage() {
                       errors={errors}
                       onChange={handleBasicChange}
                       onSelectChange={handleSelectChange}
+                      onNumberChange={handleNumberChange}
                     />
                     {errors.submit && (
                       <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">

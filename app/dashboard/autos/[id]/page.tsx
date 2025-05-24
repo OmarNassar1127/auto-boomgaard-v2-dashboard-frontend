@@ -144,10 +144,16 @@ export default function CarDetailPage() {
     }
   }
 
-  const formatCurrency = (price: string): string => {
-    if (price.includes('€')) return price
-    const numericPrice = parseFloat(price.replace(/[^0-9.-]/g, ''))
-    if (isNaN(numericPrice)) return price
+  const formatNumber = (num: number | string): string => {
+    const number = typeof num === 'string' ? parseInt(num) : num
+    if (isNaN(number)) return num.toString()
+    return number.toLocaleString('nl-NL')
+  }
+
+  const formatCurrency = (price: string | number): string => {
+    if (typeof price === 'string' && price.includes('€')) return price
+    const numericPrice = typeof price === 'number' ? price : parseFloat(price.toString().replace(/[^0-9.-]/g, ''))
+    if (isNaN(numericPrice)) return price.toString()
     return new Intl.NumberFormat('nl-NL', {
       style: 'currency',
       currency: 'EUR',
@@ -348,7 +354,7 @@ export default function CarDetailPage() {
                     
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Kilometerstand</span>
-                      <span className="font-medium">{car.mileage}</span>
+                      <span className="font-medium">{formatNumber(car.mileage)} km</span>
                     </div>
                     <Separator />
                     
@@ -373,7 +379,7 @@ export default function CarDetailPage() {
                     
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Vermogen</span>
-                      <span className="font-medium">{car.power}</span>
+                      <span className="font-medium">{formatNumber(car.power)} pk</span>
                     </div>
                     <Separator />
                     
@@ -405,7 +411,7 @@ export default function CarDetailPage() {
                   <Card className="p-4 flex flex-col items-center text-center gap-2">
                     <Gauge className="h-6 w-6 text-primary" />
                     <span className="text-sm text-muted-foreground">Kilometerstand</span>
-                    <span className="font-medium">{car.mileage}</span>
+                    <span className="font-medium">{formatNumber(car.mileage)}</span>
                   </Card>
                   
                   <Card className="p-4 flex flex-col items-center text-center gap-2">
