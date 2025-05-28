@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Header } from "@/app/components/dashboard/header"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
@@ -65,6 +66,7 @@ const POST_STATUS_OPTIONS = [
 ]
 
 export default function CarsPage() {
+  const router = useRouter()
   const [state, setState] = useState<CarsPageState>({
     cars: [],
     loading: true,
@@ -207,25 +209,26 @@ export default function CarsPage() {
   }, [state.filters])
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <Header 
         title="Auto's" 
         subtitle="Beheer de auto's in uw inventaris"
       />
       
-      <div className="flex-1 p-6 space-y-6">
-        {/* Header Actions */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Zoeken op merk, model, jaar..."
-                className="pl-9 w-full sm:w-[300px]"
-                value={state.filters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
-              />
-            </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6 space-y-6">
+          {/* Header Actions */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Zoeken op merk, model, jaar..."
+                  className="pl-9 w-full sm:w-[300px]"
+                  value={state.filters.search}
+                  onChange={(e) => handleFilterChange('search', e.target.value)}
+                />
+              </div>
             
             {/* Filters */}
             <Select
@@ -246,22 +249,22 @@ export default function CarsPage() {
             </SelectContent>
             </Select>
 
-            <Select
-            value={state.filters.postStatus || "all"}
-            onValueChange={(value) => handleFilterChange('postStatus', value === "all" ? "" : value)}
-            >
-            <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Publicatie status" />
-            </SelectTrigger>
-            <SelectContent>
-            <SelectItem value="all">Alle statussen</SelectItem>
-            {POST_STATUS_OPTIONS.map((option) => (
+             <Select
+        value={state.filters.postStatus || "all"}
+        onValueChange={(value) => handleFilterChange('postStatus', value === "all" ? "" : value)}
+      >
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Publicatie status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Alle statussen</SelectItem>
+          {POST_STATUS_OPTIONS.map((option) => (
             <SelectItem key={option.value} value={option.value}>
-            {option.label}
+              {option.label}
             </SelectItem>
-            ))}
-            </SelectContent>
-            </Select>
+          ))}
+        </SelectContent>
+      </Select>
 
             {hasActiveFilters && (
               <Button variant="outline" size="sm" onClick={clearFilters}>
@@ -315,17 +318,17 @@ export default function CarsPage() {
         <Card>
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-gray-100">
                 <TableRow>
-                  <TableHead className="w-[80px]">ID</TableHead>
-                  <TableHead>Foto</TableHead>
-                  <TableHead>Merk & Model</TableHead>
-                  <TableHead>Prijs</TableHead>
-                  <TableHead>Jaar</TableHead>
-                  <TableHead>KM Stand</TableHead>
-                  <TableHead>Voertuig Status</TableHead>
-                  <TableHead>Publicatie</TableHead>
-                  <TableHead className="w-[120px]">Acties</TableHead>
+                  <TableHead className="w-[80px] text-black font-medium">ID</TableHead>
+                  <TableHead className="text-black font-medium">Foto</TableHead>
+                  <TableHead className="text-black font-medium">Merk & Model</TableHead>
+                  <TableHead className="text-black font-medium">Prijs</TableHead>
+                  <TableHead className="text-black font-medium">Jaar</TableHead>
+                  <TableHead className="text-black font-medium">KM Stand</TableHead>
+                  <TableHead className="text-black font-medium">Voertuig Status</TableHead>
+                  <TableHead className="text-black font-medium">Publicatie</TableHead>
+                  <TableHead className="w-[120px] text-black font-medium">Acties</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -361,7 +364,11 @@ export default function CarsPage() {
                   </TableRow>
                 ) : (
                   state.cars.map((car) => (
-                    <TableRow key={car.id}>
+                    <TableRow 
+                      key={car.id} 
+                      className="cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => router.push(`/dashboard/autos/${car.id}`)}
+                    >
                       <TableCell className="font-medium">#{car.id}</TableCell>
                       <TableCell>
                         <div className="relative w-16 h-12 rounded-md overflow-hidden bg-muted">
@@ -396,7 +403,7 @@ export default function CarsPage() {
                         {getPostStatusBadge(car.post_status)}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                           <Button variant="ghost" size="icon" asChild>
                             <Link href={`/dashboard/autos/${car.id}`}>
                               <Eye className="h-4 w-4" />
@@ -455,6 +462,7 @@ export default function CarsPage() {
             </div>
           )}
         </Card>
+        </div>
       </div>
     </div>
   )

@@ -15,27 +15,101 @@ export default function LoginPage() {
   const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({})
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
   })
 
+  // Email validation function
+  const validateEmail = (email: string): string | null => {
+    if (!email.trim()) {
+      return 'Het e-mailadres is verplicht.'
+    }
+    
+    if (!email.includes('@')) {
+      return 'Voer een geldig e-mailadres in. Het ontbreekt een \'@\' teken.'
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return 'Voer een geldig e-mailadres in.'
+    }
+    
+    return null
+  }
+
+  // Password validation function
+  const validatePassword = (password: string): string | null => {
+    if (!password.trim()) {
+      return 'Het wachtwoord is verplicht.'
+    }
+    return null
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setCredentials(prev => ({ ...prev, [name]: value }))
-    if (error) setError('') // Clear error when user starts typing
+    
+    // Clear errors when user starts typing
+    if (error) setError('')
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({ ...prev, [name]: '' }))
+    }
+    
+    // Real-time validation
+    if (name === 'email' && value.trim()) {
+      const emailError = validateEmail(value)
+      if (emailError) {
+        setValidationErrors(prev => ({ ...prev, email: emailError }))
+      }
+    }
+    
+    if (name === 'password' && value.trim()) {
+      const passwordError = validatePassword(value)
+      if (passwordError) {
+        setValidationErrors(prev => ({ ...prev, password: passwordError }))
+      }
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
     setError('')
+    setValidationErrors({})
+
+    // Validate form before submission
+    const emailError = validateEmail(credentials.email)
+    const passwordError = validatePassword(credentials.password)
+    
+    const newValidationErrors: {[key: string]: string} = {}
+    if (emailError) newValidationErrors.email = emailError
+    if (passwordError) newValidationErrors.password = passwordError
+    
+    if (Object.keys(newValidationErrors).length > 0) {
+      setValidationErrors(newValidationErrors)
+      return
+    }
+
+    setIsLoading(true)
 
     try {
       await login(credentials.email, credentials.password)
       router.push('/dashboard')
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Login failed')
+      // Handle server-side validation errors
+      if (error instanceof Error) {
+        const errorMessage = error.message
+        
+        // Check if it's a validation error from the server
+        if (errorMessage.includes('e-mailadres') || errorMessage.includes('@')) {
+          setValidationErrors({ email: errorMessage })
+        } else {
+          setError(errorMessage)
+        }
+      } else {
+        setError('Inloggen mislukt. Probeer het opnieuw.')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -74,7 +148,14 @@ export default function LoginPage() {
                   onChange={handleChange}
                   placeholder="admin@autoboomgaard.nl"
                   disabled={isLoading}
+                  className={validationErrors.email ? "border-red-500" : ""}
                 />
+                {validationErrors.email && (
+                  <div className="flex items-center gap-2 text-sm text-red-600">
+                    <AlertCircle className="h-4 w-4" />
+                    <p>{validationErrors.email}</p>
+                  </div>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -89,7 +170,14 @@ export default function LoginPage() {
                   onChange={handleChange}
                   placeholder="••••••••"
                   disabled={isLoading}
+                  className={validationErrors.password ? "border-red-500" : ""}
                 />
+                {validationErrors.password && (
+                  <div className="flex items-center gap-2 text-sm text-red-600">
+                    <AlertCircle className="h-4 w-4" />
+                    <p>{validationErrors.password}</p>
+                  </div>
+                )}
               </div>
 
               {error && (

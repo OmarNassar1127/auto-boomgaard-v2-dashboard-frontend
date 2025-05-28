@@ -146,17 +146,15 @@ export default function UsersPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col h-screen overflow-hidden">
         <Header 
           title="Gebruikers" 
           subtitle="Beheer gebruikerstoegang tot het systeem"
         />
-        <div className="flex-1 p-6 space-y-6">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Gebruikers laden...</p>
-            </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Gebruikers laden...</p>
           </div>
         </div>
       </div>
@@ -164,31 +162,32 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <Header 
         title="Gebruikers" 
         subtitle="Beheer gebruikerstoegang tot het systeem"
       />
       
-      <div className="flex-1 p-6 space-y-6">
-        {error && (
-          <Card className="border-red-200 bg-red-50">
-            <CardContent className="p-4">
-              <p className="text-red-800">{error}</p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-2"
-                onClick={() => {
-                  setError(null)
-                  fetchUsers()
-                }}
-              >
-                Opnieuw proberen
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6 space-y-6">
+          {error && (
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="p-4">
+                <p className="text-red-800">{error}</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-2"
+                  onClick={() => {
+                    setError(null)
+                    fetchUsers()
+                  }}
+                >
+                  Opnieuw proberen
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="relative w-full sm:w-auto">
@@ -371,6 +370,7 @@ export default function UsersPage() {
               )}
             </CardContent>
           </Card>
+        </div>
         </div>
       </div>
     </div>

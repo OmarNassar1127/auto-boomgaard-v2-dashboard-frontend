@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/app/contexts/AuthContext"
 import { Sidebar } from "@/app/components/dashboard/sidebar"
-import { Menu, X, Loader2 } from "lucide-react"
+import { Menu, Loader2 } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 
 export default function DashboardLayout({
@@ -56,33 +56,42 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Mobile Sidebar Toggle */}
-      <div className="fixed top-4 left-4 z-50 lg:hidden">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="bg-background"
-        >
-          {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-        </Button>
-      </div>
+      {/* Mobile Sidebar Toggle - positioned to not overlap with sidebar content */}
+      {!sidebarOpen && (
+        <div className="fixed top-3 left-3 z-50 lg:hidden">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="bg-background shadow-md h-9 w-9"
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Sidebar */}
-      <div 
-        className={`fixed inset-0 z-40 transform transition-all duration-300 ease-in-out lg:relative lg:inset-auto lg:translate-x-0 lg:transition-none ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
+      <div className="lg:block">
         <div 
-          className="absolute inset-0 bg-black/50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-        <Sidebar className="relative z-50 w-64" />
+          className={`fixed inset-0 z-40 transform transition-all duration-300 ease-in-out lg:hidden ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+          <Sidebar className="relative z-50" onMobileClose={() => setSidebarOpen(false)} />
+        </div>
+        
+        {/* Desktop fixed sidebar */}
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden ml-0 lg:ml-64">
         <main className="flex-1 overflow-y-auto bg-muted/20">
           {children}
         </main>

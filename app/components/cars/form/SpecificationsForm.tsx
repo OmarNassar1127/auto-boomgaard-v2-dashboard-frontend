@@ -47,10 +47,10 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
     return value.replace(/\s*(nm|s|cm|km\/h|L|cc|kg)\s*$/i, '')
   }
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="space-y-4 md:space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
         <div className="space-y-2">
-          <Label htmlFor="first_registration_date">Datum eerste registratie</Label>
+          <Label htmlFor="first_registration_date" className="text-sm font-medium">Datum eerste registratie</Label>
           <Input
             id="first_registration_date"
             name="first_registration_date"
@@ -61,7 +61,7 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="seats">Aantal zitplaatsen</Label>
+          <Label htmlFor="seats" className="text-sm font-medium">Aantal zitplaatsen</Label>
           <Input
             id="seats"
             name="seats"
@@ -72,7 +72,7 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="torque">Maximale koppel</Label>
+          <Label htmlFor="torque" className="text-sm font-medium">Maximale koppel</Label>
           <div className="relative">
             <Input
               id="torque"
@@ -82,14 +82,14 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
               onChange={handleUnitChange('torque', 'nm')}
               className="pr-12"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 text-sm">
               nm
             </div>
           </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="acceleration">Acceleratie (0-100km/h)</Label>
+          <Label htmlFor="acceleration" className="text-sm font-medium">Acceleratie (0-100km/h)</Label>
           <div className="relative">
             <Input
               id="acceleration"
@@ -99,14 +99,14 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
               onChange={handleUnitChange('acceleration', 's')}
               className="pr-12"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 text-sm">
               s
             </div>
           </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="wheelbase">Wielbasis</Label>
+          <Label htmlFor="wheelbase" className="text-sm font-medium">Wielbasis</Label>
           <div className="relative">
             <Input
               id="wheelbase"
@@ -116,14 +116,14 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
               onChange={handleUnitChange('wheelbase', 'cm')}
               className="pr-12"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 text-sm">
               cm
             </div>
           </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="cylinders">Aantal cilinders</Label>
+          <Label htmlFor="cylinders" className="text-sm font-medium">Aantal cilinders</Label>
           <Input
             id="cylinders"
             name="cylinders"
@@ -134,7 +134,7 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="model_date_from">Modeldatum vanaf</Label>
+          <Label htmlFor="model_date_from" className="text-sm font-medium">Modeldatum vanaf</Label>
           <Input
             id="model_date_from"
             name="model_date_from"
@@ -145,7 +145,7 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="doors">Aantal deuren</Label>
+          <Label htmlFor="doors" className="text-sm font-medium">Aantal deuren</Label>
           <Input
             id="doors"
             name="doors"
@@ -156,7 +156,7 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="gears">Aantal versnellingen</Label>
+          <Label htmlFor="gears" className="text-sm font-medium">Aantal versnellingen</Label>
           <Input
             id="gears"
             name="gears"
@@ -167,7 +167,7 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="top_speed">Topsnelheid</Label>
+          <Label htmlFor="top_speed" className="text-sm font-medium">Topsnelheid</Label>
           <div className="relative">
             <Input
               id="top_speed"
@@ -177,14 +177,14 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
               onChange={handleUnitChange('top_speed', 'km/h')}
               className="pr-16"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 text-sm">
               km/h
             </div>
           </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="tank_capacity">Tankinhoud</Label>
+          <Label htmlFor="tank_capacity" className="text-sm font-medium">Tankinhoud</Label>
           <div className="relative">
             <Input
               id="tank_capacity"
@@ -194,14 +194,14 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
               onChange={handleUnitChange('tank_capacity', 'L')}
               className="pr-12"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 text-sm">
               L
             </div>
           </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="engine_capacity">Cilinderinhoud</Label>
+          <Label htmlFor="engine_capacity" className="text-sm font-medium">Cilinderinhoud</Label>
           <div className="relative">
             <Input
               id="engine_capacity"
@@ -211,14 +211,14 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
               onChange={handleUnitChange('engine_capacity', 'cc')}
               className="pr-12"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 text-sm">
               cc
             </div>
           </div>
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="weight">Gewicht (leeg)</Label>
+          <Label htmlFor="weight" className="text-sm font-medium">Gewicht (leeg)</Label>
           <div className="relative">
             <Input
               id="weight"
@@ -228,7 +228,7 @@ export function SpecificationsForm({ data, onChange }: SpecificationsFormProps) 
               onChange={handleUnitChange('weight', 'kg')}
               className="pr-12"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 text-sm">
               kg
             </div>
           </div>

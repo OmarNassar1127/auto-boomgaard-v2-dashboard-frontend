@@ -261,139 +261,161 @@ export default function CarDetailPage() {
         subtitle={`Auto ID: #${car.id} • ${car.year}`} 
       />
       
-      <div className="flex-1 p-6 space-y-6">
+      <div className="flex-1 p-4 md:p-6 space-y-4 md:space-y-6">
         {/* Header Actions */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <Button variant="outline" onClick={() => router.back()}>
+          <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Terug naar overzicht
+            <span className="hidden sm:inline">Terug naar overzicht</span>
+            <span className="sm:hidden">Terug</span>
           </Button>
           
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge className={getVehicleStatusConfig(car.vehicle_status).className}>
-              {getVehicleStatusConfig(car.vehicle_status).label}
-            </Badge>
-            <Badge variant="outline" className={getPostStatusConfig(car.post_status).className}>
-              {getPostStatusConfig(car.post_status).label}
-            </Badge>
-            <Button variant="outline" asChild>
-              <Link href={`/dashboard/autos/${car.id}/bewerken`}>
-                <Edit className="mr-2 h-4 w-4" />
-                Bewerken
-              </Link>
-            </Button>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="destructive">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Verwijderen
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Auto verwijderen</DialogTitle>
-                  <DialogDescription>
-                    Weet je zeker dat je {car.brand} {car.model} wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button variant="outline">Annuleren</Button>
-                  <Button variant="destructive" onClick={deleteCar}>
-                    Verwijderen
+          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-2 w-full sm:w-auto">
+            <div className="flex flex-wrap gap-2">
+              <Badge className={getVehicleStatusConfig(car.vehicle_status).className}>
+                {getVehicleStatusConfig(car.vehicle_status).label}
+              </Badge>
+              <Badge variant="outline" className={getPostStatusConfig(car.post_status).className}>
+                {getPostStatusConfig(car.post_status).label}
+              </Badge>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Button variant="outline" asChild className="w-full sm:w-auto">
+                <Link href={`/dashboard/autos/${car.id}/bewerken`}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Bewerken</span>
+                  <span className="sm:hidden">Edit</span>
+                </Link>
+              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="destructive" className="w-full sm:w-auto">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    <span className="hidden sm:inline">Verwijderen</span>
+                    <span className="sm:hidden">Delete</span>
                   </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Auto verwijderen</DialogTitle>
+                    <DialogDescription>
+                      Weet je zeker dat je {car.brand} {car.model} wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button variant="outline">Annuleren</Button>
+                    <Button variant="destructive" onClick={deleteCar}>
+                      Verwijderen
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
           {/* Main Content */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <div className="flex items-center justify-between">
+          <Card className="xl:col-span-2">
+            <CardHeader className="p-4 md:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <CardTitle>{car.brand} {car.model}</CardTitle>
-                  <CardDescription>{formatCurrency(car.price)} {car.tax_info}</CardDescription>
+                  <CardTitle className="text-lg md:text-xl">{car.brand} {car.model}</CardTitle>
+                  <CardDescription className="text-sm md:text-base">{formatCurrency(car.price)} {car.tax_info}</CardDescription>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-primary">{formatCurrency(car.price)}</p>
-                  <p className="text-sm text-muted-foreground">{car.tax_info}</p>
+                <div className="text-left sm:text-right">
+                  <p className="text-xl md:text-2xl font-bold text-primary">{formatCurrency(car.price)}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">{car.tax_info}</p>
                 </div>
               </div>
             </CardHeader>
 
-            <Tabs defaultValue="details" className="mx-6">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="details">Basisgegevens</TabsTrigger>
-                <TabsTrigger value="specifications">Specificaties</TabsTrigger>
-                <TabsTrigger value="options">Opties</TabsTrigger>
-                <TabsTrigger value="highlights">Highlights</TabsTrigger>
-              </TabsList>
+            <Tabs defaultValue="details" className="mx-4 md:mx-6">
+              {/* Mobile: Scrollable tab list */}
+              <div className="w-full overflow-x-auto">
+                <TabsList className="inline-flex w-full min-w-max md:grid md:grid-cols-4 md:w-full">
+                  <TabsTrigger value="details" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3">
+                    <span className="hidden sm:inline">Basisgegevens</span>
+                    <span className="sm:hidden">Basis</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="specifications" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3">
+                    <span className="hidden sm:inline">Specificaties</span>
+                    <span className="sm:hidden">Specs</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="options" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3">
+                    Opties
+                  </TabsTrigger>
+                  <TabsTrigger value="highlights" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3">
+                    <span className="hidden sm:inline">Highlights</span>
+                    <span className="sm:hidden">Info</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
               
-              <TabsContent value="details" className="space-y-6 mt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Merk</span>
-                      <span className="font-medium">{car.brand}</span>
+              <TabsContent value="details" className="space-y-4 md:space-y-6 mt-4 md:mt-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Merk</span>
+                      <span className="font-medium text-sm sm:text-base">{car.brand}</span>
                     </div>
                     <Separator />
                     
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Model</span>
-                      <span className="font-medium">{car.model}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Model</span>
+                      <span className="font-medium text-sm sm:text-base">{car.model}</span>
                     </div>
                     <Separator />
                     
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Bouwjaar</span>
-                      <span className="font-medium">{car.year}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Bouwjaar</span>
+                      <span className="font-medium text-sm sm:text-base">{car.year}</span>
                     </div>
                     <Separator />
                     
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Kilometerstand</span>
-                      <span className="font-medium">{formatNumber(car.mileage)} km</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Kilometerstand</span>
+                      <span className="font-medium text-sm sm:text-base">{formatNumber(car.mileage)} km</span>
                     </div>
                     <Separator />
                     
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Kleur</span>
-                      <span className="font-medium">{car.color}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Kleur</span>
+                      <span className="font-medium text-sm sm:text-base">{car.color}</span>
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Transmissie</span>
-                      <span className="font-medium">{car.transmission}</span>
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Transmissie</span>
+                      <span className="font-medium text-sm sm:text-base">{car.transmission}</span>
                     </div>
                     <Separator />
                     
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Brandstoftype</span>
-                      <span className="font-medium">{car.fuel}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Brandstoftype</span>
+                      <span className="font-medium text-sm sm:text-base">{car.fuel}</span>
                     </div>
                     <Separator />
                     
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Vermogen</span>
-                      <span className="font-medium">{formatNumber(car.power)} pk</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Vermogen</span>
+                      <span className="font-medium text-sm sm:text-base">{formatNumber(car.power)} pk</span>
                     </div>
                     <Separator />
                     
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Voertuig Status</span>
-                      <Badge className={getVehicleStatusConfig(car.vehicle_status).className}>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Voertuig Status</span>
+                      <Badge className={`${getVehicleStatusConfig(car.vehicle_status).className} text-xs`}>
                         {getVehicleStatusConfig(car.vehicle_status).label}
                       </Badge>
                     </div>
                     <Separator />
                     
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Publicatie Status</span>
-                      <Badge variant="outline" className={getPostStatusConfig(car.post_status).className}>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Publicatie Status</span>
+                      <Badge variant="outline" className={`${getPostStatusConfig(car.post_status).className} text-xs`}>
                         {getPostStatusConfig(car.post_status).label}
                       </Badge>
                     </div>
@@ -401,67 +423,67 @@ export default function CarDetailPage() {
                 </div>
                 
                 {/* Quick Stats Cards */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-                  <Card className="p-4 flex flex-col items-center text-center gap-2">
-                    <Calendar className="h-6 w-6 text-primary" />
-                    <span className="text-sm text-muted-foreground">Bouwjaar</span>
-                    <span className="font-medium">{car.year}</span>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 pt-4">
+                  <Card className="p-3 md:p-4 flex flex-col items-center text-center gap-1 md:gap-2">
+                    <Calendar className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                    <span className="text-xs md:text-sm text-muted-foreground">Bouwjaar</span>
+                    <span className="font-medium text-sm md:text-base">{car.year}</span>
                   </Card>
                   
-                  <Card className="p-4 flex flex-col items-center text-center gap-2">
-                    <Gauge className="h-6 w-6 text-primary" />
-                    <span className="text-sm text-muted-foreground">Kilometerstand</span>
-                    <span className="font-medium">{formatNumber(car.mileage)}</span>
+                  <Card className="p-3 md:p-4 flex flex-col items-center text-center gap-1 md:gap-2">
+                    <Gauge className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                    <span className="text-xs md:text-sm text-muted-foreground">Kilometerstand</span>
+                    <span className="font-medium text-xs sm:text-sm md:text-base">{formatNumber(car.mileage)}</span>
                   </Card>
                   
-                  <Card className="p-4 flex flex-col items-center text-center gap-2">
-                    <Fuel className="h-6 w-6 text-primary" />
-                    <span className="text-sm text-muted-foreground">Brandstof</span>
-                    <span className="font-medium">{car.fuel}</span>
+                  <Card className="p-3 md:p-4 flex flex-col items-center text-center gap-1 md:gap-2">
+                    <Fuel className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                    <span className="text-xs md:text-sm text-muted-foreground">Brandstof</span>
+                    <span className="font-medium text-xs sm:text-sm md:text-base">{car.fuel}</span>
                   </Card>
                   
-                  <Card className="p-4 flex flex-col items-center text-center gap-2">
-                    <ArrowRight className="h-6 w-6 text-primary" />
-                    <span className="text-sm text-muted-foreground">Transmissie</span>
-                    <span className="font-medium">{car.transmission}</span>
+                  <Card className="p-3 md:p-4 flex flex-col items-center text-center gap-1 md:gap-2">
+                    <ArrowRight className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                    <span className="text-xs md:text-sm text-muted-foreground truncate">Transmissie</span>
+                    <span className="font-medium text-xs sm:text-sm md:text-base truncate">{car.transmission}</span>
                   </Card>
                 </div>
               </TabsContent>
               
-              <TabsContent value="specifications" className="space-y-6 mt-6">
+              <TabsContent value="specifications" className="space-y-4 md:space-y-6 mt-4 md:mt-6">
                 {car.specifications && Object.keys(car.specifications).length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                     {Object.entries(car.specifications).map(([key, value]) => (
-                      <div key={key} className="flex justify-between py-2">
-                        <span className="text-muted-foreground capitalize">
+                      <div key={key} className="flex justify-between items-center py-2 border-b">
+                        <span className="text-xs sm:text-sm text-muted-foreground capitalize">
                           {key.replace(/_/g, ' ')}
                         </span>
-                        <span className="font-medium">{value}</span>
+                        <span className="font-medium text-xs sm:text-sm">{value}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-muted-foreground">Geen specificaties beschikbaar</p>
+                  <div className="text-center py-6 md:py-8">
+                    <CheckCircle2 className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">Geen specificaties beschikbaar</p>
                   </div>
                 )}
               </TabsContent>
               
-              <TabsContent value="options" className="space-y-6 mt-6">
+              <TabsContent value="options" className="space-y-4 md:space-y-6 mt-4 md:mt-6">
                 {car.options_accessories?.data ? (
-                  <div className="space-y-6">
+                  <div className="space-y-4 md:space-y-6">
                     {Object.entries(car.options_accessories.data).map(([category, items]) => (
                       items && items.length > 0 && (
-                        <div key={category} className="space-y-3">
-                          <h4 className="font-medium capitalize">
+                        <div key={category} className="space-y-2 md:space-y-3">
+                          <h4 className="font-medium capitalize text-sm md:text-base">
                             {category.replace(/_/g, ' ')}
                           </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {items.map((item, index) => (
                               <div key={index} className="flex items-start gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                <span className="text-sm">{item}</span>
+                                <CheckCircle2 className="h-3 w-3 md:h-4 md:w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                <span className="text-xs sm:text-sm break-words">{item}</span>
                               </div>
                             ))}
                           </div>
@@ -470,32 +492,32 @@ export default function CarDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-muted-foreground">Geen opties en accessoires beschikbaar</p>
+                  <div className="text-center py-6 md:py-8">
+                    <CheckCircle2 className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">Geen opties en accessoires beschikbaar</p>
                   </div>
                 )}
               </TabsContent>
               
-              <TabsContent value="highlights" className="mt-6">
+              <TabsContent value="highlights" className="mt-4 md:mt-6">
                 {car.highlights?.content ? (
-                  <div className="prose max-w-none text-sm">
+                  <div className="prose max-w-none text-xs sm:text-sm">
                     <div dangerouslySetInnerHTML={{ 
                       __html: car.highlights.content.replace(/\n/g, '<br>') 
                     }} />
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-muted-foreground">Geen highlights beschikbaar</p>
+                  <div className="text-center py-6 md:py-8">
+                    <CheckCircle2 className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">Geen highlights beschikbaar</p>
                   </div>
                 )}
               </TabsContent>
             </Tabs>
             
-            <div className="p-6 pt-0">
+            <div className="p-4 md:p-6 pt-0">
               <Separator className="mb-4" />
-              <div className="flex justify-between text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row justify-between gap-2 text-xs sm:text-sm text-muted-foreground">
                 <span>Toegevoegd: {car.created_at ? formatDate(car.created_at) : 'Onbekend'}</span>
                 <span>Gewijzigd: {car.updated_at ? formatDate(car.updated_at) : 'Onbekend'}</span>
               </div>
@@ -503,16 +525,16 @@ export default function CarDetailPage() {
           </Card>
           
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             {/* Images */}
             <Card>
-              <CardHeader>
-                <CardTitle>Foto's</CardTitle>
-                <CardDescription>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="text-base md:text-lg">Foto's</CardTitle>
+                <CardDescription className="text-sm">
                   {hasImages ? `${images.length} foto's beschikbaar` : 'Geen foto\'s beschikbaar'}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6">
                 {hasImages ? (
                   <>
                     {/* Main Image */}
@@ -524,12 +546,13 @@ export default function CarDetailPage() {
                         className="h-full w-full object-cover hover:scale-105 transition-transform"
                       />
                       {sortedImages[activeImageIndex]?.is_main && (
-                        <Badge className="absolute top-2 left-2 bg-yellow-400 text-yellow-900">
+                        <Badge className="absolute top-1 left-1 sm:top-2 sm:left-2 bg-yellow-400 text-yellow-900 text-xs">
                           <Star className="h-3 w-3 mr-1 fill-current" />
-                          Hoofdfoto
+                          <span className="hidden sm:inline">Hoofdfoto</span>
+                          <span className="sm:hidden">Main</span>
                         </Badge>
                       )}
-                      <div className="absolute inset-0 flex items-center justify-between p-2">
+                      <div className="absolute inset-0 flex items-center justify-between p-1 sm:p-2">
                         <Button
                           variant="outline"
                           size="icon"
@@ -537,10 +560,10 @@ export default function CarDetailPage() {
                             e.stopPropagation()
                             prevImage()
                           }}
-                          className="h-8 w-8 rounded-full bg-background/80"
+                          className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-background/80"
                           disabled={sortedImages.length <= 1}
                         >
-                          <ChevronLeft className="h-4 w-4" />
+                          <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
                         <Button
                           variant="outline"
@@ -549,25 +572,25 @@ export default function CarDetailPage() {
                             e.stopPropagation()
                             nextImage()
                           }}
-                          className="h-8 w-8 rounded-full bg-background/80"
+                          className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-background/80"
                           disabled={sortedImages.length <= 1}
                         >
-                          <ChevronRight className="h-4 w-4" />
+                          <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
-                      <div className="absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
+                      <div className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
                         {activeImageIndex + 1} / {sortedImages.length}
                       </div>
                     </div>
                     
                     {/* Thumbnail Grid */}
                     {sortedImages.length > 1 && (
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-3 gap-1 sm:gap-2">
                         {sortedImages.map((image, index) => (
                           <div
                             key={image.id}
                             className={`relative aspect-video cursor-pointer overflow-hidden rounded-md transition-all ${
-                              index === activeImageIndex ? "ring-2 ring-primary scale-105" : "hover:scale-105"
+                              index === activeImageIndex ? "ring-1 sm:ring-2 ring-primary scale-105" : "hover:scale-105"
                             }`}
                             onClick={() => setActiveImageIndex(index)}
                           >
@@ -577,8 +600,8 @@ export default function CarDetailPage() {
                               className="h-full w-full object-cover"
                             />
                             {image.is_main && (
-                              <div className="absolute top-1 left-1">
-                                <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                              <div className="absolute top-0.5 left-0.5 sm:top-1 sm:left-1">
+                                <Star className="h-2 w-2 sm:h-3 sm:w-3 text-yellow-400 fill-current" />
                               </div>
                             )}
                           </div>
@@ -589,15 +612,16 @@ export default function CarDetailPage() {
                 ) : (
                   <div className="aspect-video w-full flex items-center justify-center bg-muted rounded-lg">
                     <div className="text-center">
-                      <ImageIcon className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">Geen foto's beschikbaar</p>
+                      <ImageIcon className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-xs sm:text-sm text-muted-foreground">Geen foto's beschikbaar</p>
                     </div>
                   </div>
                 )}
                 <Button asChild variant="outline" className="w-full">
                   <Link href={`/dashboard/autos/${car.id}/bewerken`}>
                     <Plus className="mr-2 h-4 w-4" />
-                    Foto's beheren
+                    <span className="hidden sm:inline">Foto's beheren</span>
+                    <span className="sm:hidden">Foto's</span>
                   </Link>
                 </Button>
               </CardContent>
@@ -605,14 +629,14 @@ export default function CarDetailPage() {
             
             {/* Quick Actions */}
             <Card>
-              <CardHeader>
-                <CardTitle>Snelle acties</CardTitle>
-                <CardDescription>Status en publicatie beheer</CardDescription>
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="text-base md:text-lg">Snelle acties</CardTitle>
+                <CardDescription className="text-sm">Status en publicatie beheer</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6">
                 {/* Publication Status */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Publicatie status:</label>
+                  <label className="text-xs sm:text-sm font-medium">Publicatie status:</label>
                   <Button
                     onClick={togglePublishStatus}
                     disabled={updatingStatus}
@@ -622,12 +646,14 @@ export default function CarDetailPage() {
                     {car.post_status === 'published' ? (
                       <>
                         <EyeOff className="mr-2 h-4 w-4" />
-                        Depubliceren
+                        <span className="hidden sm:inline">Depubliceren</span>
+                        <span className="sm:hidden">Offline</span>
                       </>
                     ) : (
                       <>
                         <Eye className="mr-2 h-4 w-4" />
-                        Publiceren
+                        <span className="hidden sm:inline">Publiceren</span>
+                        <span className="sm:hidden">Online</span>
                       </>
                     )}
                   </Button>
@@ -637,7 +663,7 @@ export default function CarDetailPage() {
                 
                 {/* Vehicle Status */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Voertuig status:</label>
+                  <label className="text-xs sm:text-sm font-medium">Voertuig status:</label>
                   <Select
                     value={car.vehicle_status}
                     onValueChange={(value: 'sold' | 'listed' | 'reserved' | 'upcoming') => updateVehicleStatus(value)}
@@ -661,9 +687,9 @@ export default function CarDetailPage() {
 
         {/* Full Screen Image Dialog */}
         <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
-          <DialogContent className="max-w-4xl w-full">
+          <DialogContent className="max-w-xs sm:max-w-2xl md:max-w-4xl w-full">
             <DialogHeader>
-              <DialogTitle>{car.brand} {car.model} - Foto {activeImageIndex + 1}</DialogTitle>
+              <DialogTitle className="text-sm sm:text-base">{car.brand} {car.model} - Foto {activeImageIndex + 1}</DialogTitle>
             </DialogHeader>
             <div className="relative">
               {hasImages && (
@@ -679,21 +705,21 @@ export default function CarDetailPage() {
                         variant="outline"
                         size="icon"
                         onClick={prevImage}
-                        className="absolute left-2 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-full bg-background/80"
+                        className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-background/80"
                       >
-                        <ChevronLeft className="h-5 w-5" />
+                        <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                       </Button>
                       <Button
                         variant="outline"
                         size="icon"
                         onClick={nextImage}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-full bg-background/80"
+                        className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-background/80"
                       >
-                        <ChevronRight className="h-5 w-5" />
+                        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
                       </Button>
                     </>
                   )}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full">
+                  <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm">
                     {activeImageIndex + 1} / {sortedImages.length}
                   </div>
                 </div>
