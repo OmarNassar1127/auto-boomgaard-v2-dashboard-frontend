@@ -89,6 +89,51 @@ export default function EditCarPage() {
     }
   })
 
+  // Helper function to parse price from potentially formatted string or decimal
+  const parsePrice = (price: string | number): number => {
+    if (typeof price === 'number') {
+      return Math.round(price) // Remove decimals, convert 500000.00 -> 500000
+    }
+    
+    const priceStr = price.toString().trim()
+    
+    // Handle empty values
+    if (!priceStr) {
+      return 0
+    }
+    
+    // If it's a decimal number like "500000.00" from database
+    if (/^\d+\.\d*$/.test(priceStr)) {
+      return Math.round(parseFloat(priceStr))
+    }
+    
+    // Remove all non-digits from string (handles "€50.000", "50,000", etc.)
+    const cleanPrice = priceStr.replace(/[^\d]/g, '')
+    return parseInt(cleanPrice) || 0
+  }
+
+  // Helper function to parse any numeric field (mileage, power, etc.)
+  const parseNumericField = (value: string | number): number => {
+    if (typeof value === 'number') {
+      return Math.round(value) // Remove decimals
+    }
+    
+    const valueStr = value.toString().trim()
+    
+    if (!valueStr) {
+      return 0
+    }
+    
+    // If it's a decimal number from database
+    if (/^\d+\.\d*$/.test(valueStr)) {
+      return Math.round(parseFloat(valueStr))
+    }
+    
+    // Remove formatting and parse
+    const cleanValue = valueStr.replace(/[^\d]/g, '')
+    return parseInt(cleanValue) || 0
+  }
+
   // Fetch car data
   const fetchCarData = useCallback(async () => {
     try {
@@ -96,18 +141,18 @@ export default function EditCarPage() {
       const response = await carsAPI.getById(carId)
       const car = response.data
       
-      // Populate form data
+      // Populate form data with proper parsing
       setBasicData({
         brand: car.brand || "",
         model: car.model || "",
-        price: car.price || 0,
+        price: parsePrice(car.price || 0), // Parse price properly
         tax_info: car.tax_info || "incl. BTW",
-        mileage: car.mileage || 0,
+        mileage: parseNumericField(car.mileage || 0), // Parse mileage
         year: car.year || new Date().getFullYear(),
         color: car.color || "",
         transmission: car.transmission || "",
         fuel: car.fuel || "",
-        power: car.power || 0,
+        power: parseNumericField(car.power || 0), // Parse power
         vehicle_status: car.vehicle_status || "upcoming",
         post_status: car.post_status || "draft",
       })
@@ -355,9 +400,9 @@ export default function EditCarPage() {
   // Loading state
   if (state.loading) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="dashboard-layout flex flex-col">
         <Header title="Auto bewerken" subtitle="Gegevens worden geladen..." />
-        <div className="flex-1 p-6 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <RefreshCw className="h-12 w-12 animate-spin mx-auto mb-4 text-primary" />
             <p className="text-muted-foreground">Auto gegevens worden geladen...</p>
@@ -370,9 +415,9 @@ export default function EditCarPage() {
   // Error state
   if (state.error || !state.car) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="dashboard-layout flex flex-col">
         <Header title="Auto bewerken" subtitle="Er is een fout opgetreden" />
-        <div className="flex-1 p-6 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <AlertCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
             <p className="text-red-600 mb-2">Kon auto gegevens niet laden</p>
@@ -394,191 +439,193 @@ export default function EditCarPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="dashboard-layout flex flex-col">
       <Header 
         title={`Bewerken: ${state.car.brand} ${state.car.model}`} 
         subtitle={`Auto ID: #${state.car.id}`}
       />
       
-      <div className="flex-1 p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <Button variant="outline" onClick={() => router.back()}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Terug naar details
-          </Button>
-          
-          <div className="flex gap-2">
-            <Badge variant="outline">
-              {state.car.vehicle_status === 'upcoming' ? 'Aankomend' :
-               state.car.vehicle_status === 'listed' ? 'Te Koop' :
-               state.car.vehicle_status === 'reserved' ? 'Gereserveerd' :
-               'Verkocht'}
-            </Badge>
-            <Badge variant="outline">
-              {state.car.post_status === 'published' ? 'Gepubliceerd' : 'Concept'}
-            </Badge>
+      <div className="dashboard-content flex-1">
+        <div className="p-6 space-y-6 min-h-full">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={() => router.back()}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Terug naar details
+            </Button>
+            
+            <div className="flex gap-2">
+              <Badge variant="outline">
+                {state.car.vehicle_status === 'upcoming' ? 'Aankomend' :
+                 state.car.vehicle_status === 'listed' ? 'Te Koop' :
+                 state.car.vehicle_status === 'reserved' ? 'Gereserveerd' :
+                 'Verkocht'}
+              </Badge>
+              <Badge variant="outline">
+                {state.car.post_status === 'published' ? 'Gepubliceerd' : 'Concept'}
+              </Badge>
+            </div>
           </div>
-        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Auto bewerken</CardTitle>
-            <CardDescription>
-              Wijzig de gegevens van {state.car.brand} {state.car.model}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
-              <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-                <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="basic">Basisgegevens</TabsTrigger>
-                  <TabsTrigger value="specifications">Specificaties</TabsTrigger>
-                  <TabsTrigger value="options">Opties</TabsTrigger>
-                  <TabsTrigger value="images">
-                    Afbeeldingen
-                    {imagesPreviews.length > 0 && (
-                      <Badge variant="secondary" className="ml-2">
-                        +{imagesPreviews.length}
-                      </Badge>
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger value="description">Beschrijving</TabsTrigger>
-                </TabsList>
-                
-                <div className="mt-6">
-                  <TabsContent value="basic" className="space-y-6">
-                    <BasicInfoForm
-                      data={basicData}
-                      errors={errors}
-                      onChange={handleBasicChange}
-                      onSelectChange={handleSelectChange}
-                      onNumberChange={handleNumberChange}
-                    />
-                    {errors.submit && (
-                      <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
-                        <AlertCircle className="h-4 w-4 text-red-500" />
-                        <p className="text-sm text-red-600">{errors.submit}</p>
-                      </div>
-                    )}
-                  </TabsContent>
+          <Card className="overflow-hidden max-h-full">
+            <CardHeader className="flex-shrink-0">
+              <CardTitle>Auto bewerken</CardTitle>
+              <CardDescription>
+                Wijzig de gegevens van {state.car.brand} {state.car.model}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="overflow-visible flex-1 min-h-0">
+              <form onSubmit={(e) => e.preventDefault()} className="space-y-8 h-full">
+                <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full h-full flex flex-col">
+                  <TabsList className="grid w-full grid-cols-5 flex-shrink-0">
+                    <TabsTrigger value="basic">Basisgegevens</TabsTrigger>
+                    <TabsTrigger value="specifications">Specificaties</TabsTrigger>
+                    <TabsTrigger value="options">Opties</TabsTrigger>
+                    <TabsTrigger value="images">
+                      Afbeeldingen
+                      {imagesPreviews.length > 0 && (
+                        <Badge variant="secondary" className="ml-2">
+                          +{imagesPreviews.length}
+                        </Badge>
+                      )}
+                    </TabsTrigger>
+                    <TabsTrigger value="description">Beschrijving</TabsTrigger>
+                  </TabsList>
+                  
+                  <div className="mt-6 overflow-visible flex-1 min-h-0">
+                    <TabsContent value="basic" className="space-y-6 overflow-visible h-full">
+                      <BasicInfoForm
+                        data={basicData}
+                        errors={errors}
+                        onChange={handleBasicChange}
+                        onSelectChange={handleSelectChange}
+                        onNumberChange={handleNumberChange}
+                      />
+                      {errors.submit && (
+                        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                          <p className="text-sm text-red-600">{errors.submit}</p>
+                        </div>
+                      )}
+                    </TabsContent>
 
-                  <TabsContent value="specifications" className="space-y-6">
-                    <SpecificationsForm
-                      data={specifications}
-                      onChange={handleSpecificationChange}
-                    />
-                  </TabsContent>
+                    <TabsContent value="specifications" className="space-y-6 overflow-visible h-full">
+                      <SpecificationsForm
+                        data={specifications}
+                        onChange={handleSpecificationChange}
+                      />
+                    </TabsContent>
 
-                  <TabsContent value="options" className="space-y-6">
-                    <OptionsAccessoriesForm
-                      data={optionsAccessories}
-                      onChange={setOptionsAccessories}
-                    />
-                  </TabsContent>
+                    <TabsContent value="options" className="space-y-6 overflow-visible h-full">
+                      <OptionsAccessoriesForm
+                        data={optionsAccessories}
+                        onChange={setOptionsAccessories}
+                      />
+                    </TabsContent>
 
-                  <TabsContent value="images" className="space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Bestaande foto's</CardTitle>
-                          <CardDescription>
-                            {state.car.images?.all?.length || 0} foto's beschikbaar - Klik op een foto om deze als hoofdfoto in te stellen
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          {state.car.images?.all && state.car.images.all.length > 0 ? (
-                            <div className="grid grid-cols-2 gap-2">
-                              {state.car.images.all.map((image) => (
-                                <div key={image.id} className="relative aspect-video rounded-lg overflow-hidden group cursor-pointer">
-                                  <img
-                                    src={image.url}
-                                    alt="Car image"
-                                    className="w-full h-full object-cover"
-                                  />
-                                  
-                                  {/* Hover overlay with actions */}
-                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <div className="absolute top-2 right-2 flex gap-1">
-                                      <Button
-                                        type="button"
-                                        variant="secondary"
-                                        size="icon"
-                                        className="h-7 w-7"
-                                        onClick={() => handleSetMainImage(image.id)}
-                                        title="Instellen als hoofdfoto"
-                                        disabled={isSubmitting}
-                                      >
-                                        <Star className={`h-3 w-3 ${image.is_main ? 'fill-yellow-400 text-yellow-400' : ''}`} />
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        variant="destructive"
-                                        size="icon"
-                                        className="h-7 w-7"
-                                        onClick={() => handleDeleteImage(image.id)}
-                                        title="Foto verwijderen"
-                                        disabled={isSubmitting}
-                                      >
-                                        <X className="h-3 w-3" />
-                                      </Button>
+                    <TabsContent value="images" className="space-y-6 overflow-visible h-full">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Bestaande foto's</CardTitle>
+                            <CardDescription>
+                              {state.car.images?.all?.length || 0} foto's beschikbaar - Klik op een foto om deze als hoofdfoto in te stellen
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            {state.car.images?.all && state.car.images.all.length > 0 ? (
+                              <div className="grid grid-cols-2 gap-2">
+                                {state.car.images.all.map((image) => (
+                                  <div key={image.id} className="relative aspect-video rounded-lg overflow-hidden group cursor-pointer">
+                                    <img
+                                      src={image.url}
+                                      alt="Car image"
+                                      className="w-full h-full object-cover"
+                                    />
+                                    
+                                    {/* Hover overlay with actions */}
+                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <div className="absolute top-2 right-2 flex gap-1">
+                                        <Button
+                                          type="button"
+                                          variant="secondary"
+                                          size="icon"
+                                          className="h-7 w-7"
+                                          onClick={() => handleSetMainImage(image.id)}
+                                          title="Instellen als hoofdfoto"
+                                          disabled={isSubmitting}
+                                        >
+                                          <Star className={`h-3 w-3 ${image.is_main ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+                                        </Button>
+                                        <Button
+                                          type="button"
+                                          variant="destructive"
+                                          size="icon"
+                                          className="h-7 w-7"
+                                          onClick={() => handleDeleteImage(image.id)}
+                                          title="Foto verwijderen"
+                                          disabled={isSubmitting}
+                                        >
+                                          <X className="h-3 w-3" />
+                                        </Button>
+                                      </div>
                                     </div>
+                                    
+                                    {/* Main image badge */}
+                                    {image.is_main && (
+                                      <Badge className="absolute top-2 left-2 bg-yellow-400 text-yellow-900">
+                                        <Star className="h-3 w-3 mr-1 fill-current" />
+                                        Hoofdfoto
+                                      </Badge>
+                                    )}
                                   </div>
-                                  
-                                  {/* Main image badge */}
-                                  {image.is_main && (
-                                    <Badge className="absolute top-2 left-2 bg-yellow-400 text-yellow-900">
-                                      <Star className="h-3 w-3 mr-1 fill-current" />
-                                      Hoofdfoto
-                                    </Badge>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center py-8">
-                              <p className="text-muted-foreground">Geen bestaande foto's</p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                      
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Nieuwe foto's toevoegen</CardTitle>
-                          <CardDescription>
-                            Upload extra foto's voor deze auto
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <ImageUploadForm
-                            images={imagesPreviews}
-                            onImagesChange={setImagesPreviews}
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </TabsContent>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-center py-8">
+                                <p className="text-muted-foreground">Geen bestaande foto's</p>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                        
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Nieuwe foto's toevoegen</CardTitle>
+                            <CardDescription>
+                              Upload extra foto's voor deze auto
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <ImageUploadForm
+                              images={imagesPreviews}
+                              onImagesChange={setImagesPreviews}
+                            />
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </TabsContent>
 
-                  <TabsContent value="description" className="space-y-6">
-                    <HighlightsForm
-                      data={highlights}
-                      onChange={handleHighlightChange}
-                    />
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </form>
-          </CardContent>
-          <CardFooter>
-            <FormNavigation
-              currentTab={selectedTab}
-              isSubmitting={isSubmitting}
-              onNext={nextTab}
-              onPrevious={prevTab}
-              onSubmit={handleSubmit}
-            />
-          </CardFooter>
-        </Card>
+                    <TabsContent value="description" className="space-y-6 overflow-visible h-full">
+                      <HighlightsForm
+                        data={highlights}
+                        onChange={handleHighlightChange}
+                      />
+                    </TabsContent>
+                  </div>
+                </Tabs>
+              </form>
+            </CardContent>
+            <CardFooter className="border-t bg-gray-50 flex-shrink-0">
+              <FormNavigation
+                currentTab={selectedTab}
+                isSubmitting={isSubmitting}
+                onNext={nextTab}
+                onPrevious={prevTab}
+                onSubmit={handleSubmit}
+              />
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     </div>
   )

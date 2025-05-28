@@ -213,101 +213,118 @@ export default function CarForm() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <Header 
         title="Nieuwe auto toevoegen" 
         subtitle="Voeg een nieuwe auto toe aan de inventaris"
       />
       
-      <div className="flex-1 p-6 space-y-6">
-        <Button variant="outline" onClick={() => router.back()}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Terug naar overzicht
-        </Button>
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+          <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Terug naar overzicht</span>
+            <span className="sm:hidden">Terug</span>
+          </Button>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Auto gegevens</CardTitle>
-            <CardDescription>
-              Vul de onderstaande gegevens in om een nieuwe auto toe te voegen
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
-              <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-                <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="basic">Basisgegevens</TabsTrigger>
-                  <TabsTrigger value="specifications">Specificaties</TabsTrigger>
-                  <TabsTrigger value="options">Opties</TabsTrigger>
-                  <TabsTrigger value="images">
-                    Afbeeldingen
-                    {imagesPreviews.length > 0 && (
-                      <Badge variant="secondary" className="ml-2">
-                        {imagesPreviews.length}
-                      </Badge>
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger value="description">Beschrijving</TabsTrigger>
-                </TabsList>
-                
-                <div className="mt-6">
-                  <TabsContent value="basic" className="space-y-6">
-                    <BasicInfoForm
-                      data={basicData}
-                      errors={errors}
-                      onChange={handleBasicChange}
-                      onSelectChange={handleSelectChange}
-                      onNumberChange={handleNumberChange}
-                    />
-                    {errors.submit && (
-                      <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
-                        <AlertCircle className="h-4 w-4 text-red-500" />
-                        <p className="text-sm text-red-600">{errors.submit}</p>
-                      </div>
-                    )}
-                  </TabsContent>
+          <Card>
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="text-lg md:text-xl">Auto gegevens</CardTitle>
+              <CardDescription className="text-sm">
+                Vul de onderstaande gegevens in om een nieuwe auto toe te voegen
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 md:p-6">
+              <form onSubmit={(e) => e.preventDefault()} className="space-y-6 md:space-y-8">
+                <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+                  {/* Mobile: Scrollable tab list */}
+                  <div className="w-full overflow-x-auto">
+                    <TabsList className="inline-flex w-full min-w-max lg:grid lg:grid-cols-5 lg:w-full">
+                      <TabsTrigger value="basic" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3">
+                        <span className="hidden sm:inline">Basisgegevens</span>
+                        <span className="sm:hidden">Basis</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="specifications" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3">
+                        <span className="hidden sm:inline">Specificaties</span>
+                        <span className="sm:hidden">Specs</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="options" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3">
+                        Opties
+                      </TabsTrigger>
+                      <TabsTrigger value="images" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3">
+                        <span className="hidden sm:inline">Afbeeldingen</span>
+                        <span className="sm:hidden">Foto's</span>
+                        {imagesPreviews.length > 0 && (
+                          <Badge variant="secondary" className="ml-1 sm:ml-2 text-xs">
+                            {imagesPreviews.length}
+                          </Badge>
+                        )}
+                      </TabsTrigger>
+                      <TabsTrigger value="description" className="flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3">
+                        <span className="hidden sm:inline">Beschrijving</span>
+                        <span className="sm:hidden">Info</span>
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+                  <div className="mt-4 md:mt-6">
+                    <TabsContent value="basic" className="space-y-4 md:space-y-6 mt-0">
+                      <BasicInfoForm
+                        data={basicData}
+                        errors={errors}
+                        onChange={handleBasicChange}
+                        onSelectChange={handleSelectChange}
+                        onNumberChange={handleNumberChange}
+                      />
+                      {errors.submit && (
+                        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                          <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                          <p className="text-sm text-red-600">{errors.submit}</p>
+                        </div>
+                      )}
+                    </TabsContent>
 
-                  <TabsContent value="specifications" className="space-y-6">
-                    <SpecificationsForm
-                      data={specifications}
-                      onChange={handleSpecificationChange}
-                    />
-                  </TabsContent>
+                    <TabsContent value="specifications" className="space-y-4 md:space-y-6 mt-0">
+                      <SpecificationsForm
+                        data={specifications}
+                        onChange={handleSpecificationChange}
+                      />
+                    </TabsContent>
 
-                  <TabsContent value="options" className="space-y-6">
-                    <OptionsAccessoriesForm
-                      data={optionsAccessories}
-                      onChange={setOptionsAccessories}
-                    />
-                  </TabsContent>
+                    <TabsContent value="options" className="space-y-4 md:space-y-6 mt-0">
+                      <OptionsAccessoriesForm
+                        data={optionsAccessories}
+                        onChange={setOptionsAccessories}
+                      />
+                    </TabsContent>
 
-                  <TabsContent value="images" className="space-y-6">
-                    <ImageUploadForm
-                      images={imagesPreviews}
-                      onImagesChange={setImagesPreviews}
-                    />
-                  </TabsContent>
+                    <TabsContent value="images" className="space-y-4 md:space-y-6 mt-0">
+                      <ImageUploadForm
+                        images={imagesPreviews}
+                        onImagesChange={setImagesPreviews}
+                      />
+                    </TabsContent>
 
-                  <TabsContent value="description" className="space-y-6">
-                    <HighlightsForm
-                      data={highlights}
-                      onChange={handleHighlightChange}
-                    />
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </form>
-          </CardContent>
-          <CardFooter>
-            <FormNavigation
-              currentTab={selectedTab}
-              isSubmitting={isSubmitting}
-              onNext={nextTab}
-              onPrevious={prevTab}
-              onSubmit={handleSubmit}
-            />
-          </CardFooter>
-        </Card>
+                    <TabsContent value="description" className="space-y-4 md:space-y-6 mt-0">
+                      <HighlightsForm
+                        data={highlights}
+                        onChange={handleHighlightChange}
+                      />
+                    </TabsContent>
+                  </div>
+                </Tabs>
+              </form>
+            </CardContent>
+            <CardFooter className="p-4 md:p-6">
+              <FormNavigation
+                currentTab={selectedTab}
+                isSubmitting={isSubmitting}
+                onNext={nextTab}
+                onPrevious={prevTab}
+                onSubmit={handleSubmit}
+              />
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     </div>
   )

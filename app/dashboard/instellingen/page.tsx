@@ -127,17 +127,15 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col h-screen overflow-hidden">
         <Header 
           title="Instellingen" 
           subtitle="Beheer uw account instellingen"
         />
-        <div className="flex-1 p-6 space-y-6">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Instellingen laden...</p>
-            </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Instellingen laden...</p>
           </div>
         </div>
       </div>
@@ -145,23 +143,24 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <Header 
         title="Instellingen" 
         subtitle="Beheer uw account instellingen"
       />
       
-      <div className="flex-1 p-6 space-y-6">
-        {(error || success) && (
-          <Card className={error ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}>
-            <CardContent className="p-4">
-              <div className={`flex items-center gap-2 ${error ? "text-red-800" : "text-green-800"}`}>
-                {success && <CheckCircle className="h-4 w-4" />}
-                <p>{error || success}</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6 space-y-6">
+          {(error || success) && (
+            <Card className={error ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}>
+              <CardContent className="p-4">
+                <div className={`flex items-center gap-2 ${error ? "text-red-800" : "text-green-800"}`}>
+                  {success && <CheckCircle className="h-4 w-4" />}
+                  <p>{error || success}</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -402,6 +401,7 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </div>
   )

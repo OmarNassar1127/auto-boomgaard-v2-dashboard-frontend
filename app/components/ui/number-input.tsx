@@ -80,8 +80,35 @@ export function PriceInput({ value, onValueChange, ...props }: PriceInputProps) 
     return parseInt(cleanPrice) || 0
   }
 
+  // Safely convert value to number
+  const getNumericValue = (val: number | string): number => {
+    if (typeof val === 'number') {
+      return Math.round(val) // Remove decimals from numbers
+    }
+    
+    const stringVal = val.toString().trim()
+    
+    // Handle empty strings
+    if (!stringVal) {
+      return 0
+    }
+    
+    // If it's a decimal number string like "500000.00" from database
+    if (/^\d+\.\d*$/.test(stringVal)) {
+      return Math.round(parseFloat(stringVal)) // Convert to integer
+    }
+    
+    // If it's already just integers like "500000"
+    if (/^\d+$/.test(stringVal)) {
+      return parseInt(stringVal) || 0
+    }
+    
+    // Otherwise, parse out non-digits (for formatted strings like "€50.000")
+    return parsePrice(stringVal)
+  }
+
   const [displayValue, setDisplayValue] = React.useState(() => {
-    const numValue = typeof value === 'string' ? parsePrice(value) : value
+    const numValue = getNumericValue(value)
     return formatPrice(numValue)
   })
 
@@ -94,13 +121,13 @@ export function PriceInput({ value, onValueChange, ...props }: PriceInputProps) 
   }
 
   const handleBlur = () => {
-    const numValue = typeof value === 'string' ? parsePrice(value.toString()) : value
+    const numValue = getNumericValue(value)
     const formattedValue = formatPrice(numValue)
     setDisplayValue(formattedValue)
   }
 
   React.useEffect(() => {
-    const numValue = typeof value === 'string' ? parsePrice(value) : value
+    const numValue = getNumericValue(value)
     const formattedValue = formatPrice(numValue)
     setDisplayValue(formattedValue)
   }, [value])

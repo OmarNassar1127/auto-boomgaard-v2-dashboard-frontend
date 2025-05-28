@@ -111,12 +111,12 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col h-screen overflow-hidden">
         <Header 
           title="Dashboard" 
           subtitle="Welkom bij het Auto Boomgaard beheerderspaneel"
         />
-        <div className="flex-1 p-6 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Car className="h-12 w-12 animate-spin mx-auto mb-4 text-primary" />
             <p className="text-muted-foreground">Dashboard wordt geladen...</p>
@@ -128,12 +128,12 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col h-screen overflow-hidden">
         <Header 
           title="Dashboard" 
           subtitle="Welkom bij het Auto Boomgaard beheerderspaneel"
         />
-        <div className="flex-1 p-6 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <AlertCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
             <p className="text-red-600 mb-2">Error loading dashboard</p>
@@ -151,40 +151,42 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <Header 
         title="Dashboard" 
         subtitle="Welkom bij het Auto Boomgaard beheerderspaneel"
       />
       
-      <div className="flex-1 p-6 space-y-6">
-        {/* Quick Actions */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-3xl font-bold">Overzicht</h2>
-          <Button asChild>
-            <Link href="/dashboard/autos/toevoegen">
-              <Plus className="mr-2 h-4 w-4" />
-              Nieuwe auto toevoegen
-            </Link>
-          </Button>
-        </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+          {/* Quick Actions */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 className="text-2xl sm:text-3xl font-bold">Overzicht</h2>
+            <Button asChild className="w-full sm:w-auto">
+              <Link href="/dashboard/autos/toevoegen">
+                <Plus className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Nieuwe auto toevoegen</span>
+                <span className="sm:hidden">Auto toevoegen</span>
+              </Link>
+            </Button>
+          </div>
 
         {/* Statistics Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {statistics && Object.entries(statistics).map(([key, stat]) => {
             const IconComponent = getIconComponent(stat.icon)
             const colorClass = getColorClass(stat.color)
             
             return (
               <Card key={key}>
-                <CardContent className="p-6">
+                <CardContent className="p-4 md:p-6">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                      <p className="text-3xl font-bold">{stat.value}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{stat.label}</p>
+                      <p className="text-xl sm:text-2xl md:text-3xl font-bold">{stat.value}</p>
                     </div>
-                    <div className={`p-3 rounded-full ${colorClass}`}>
-                      <IconComponent className="h-6 w-6" />
+                    <div className={`p-2 md:p-3 rounded-full flex-shrink-0 ${colorClass}`}>
+                      <IconComponent className="h-5 w-5 md:h-6 md:w-6" />
                     </div>
                   </div>
                 </CardContent>
@@ -195,15 +197,18 @@ export default function DashboardPage() {
 
         {/* Recent Cars */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <CardTitle>Recent toegevoegde auto's</CardTitle>
               <CardDescription>
                 De laatste {Math.min(6, cars.length)} auto's die zijn toegevoegd aan de inventaris
               </CardDescription>
             </div>
-            <Button asChild variant="outline">
-              <Link href="/dashboard/autos">Alle auto's bekijken</Link>
+            <Button asChild variant="outline" className="w-full sm:w-auto">
+              <Link href="/dashboard/autos">
+                <span className="hidden sm:inline">Alle auto's bekijken</span>
+                <span className="sm:hidden">Alle auto's</span>
+              </Link>
             </Button>
           </CardHeader>
           <CardContent>
@@ -216,15 +221,16 @@ export default function DashboardPage() {
                 <p className="text-sm text-muted-foreground mb-4">
                   Begin met het toevoegen van je eerste auto aan de inventaris
                 </p>
-                <Button asChild>
+                <Button asChild className="w-full sm:w-auto">
                   <Link href="/dashboard/autos/toevoegen">
                     <Plus className="mr-2 h-4 w-4" />
-                    Eerste auto toevoegen
+                    <span className="hidden sm:inline">Eerste auto toevoegen</span>
+                    <span className="sm:hidden">Auto toevoegen</span>
                   </Link>
                 </Button>
               </div>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {cars.map((car: CarListItem) => (
                   <Card key={car.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="aspect-video w-full overflow-hidden bg-muted">
@@ -240,20 +246,22 @@ export default function DashboardPage() {
                         </div>
                       )}
                     </div>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="font-semibold">{car.brand} {car.model}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {car.year} • {formatNumber(car.mileage)} km
-                          </p>
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-semibold text-sm sm:text-base truncate">{car.brand} {car.model}</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground">
+                              {car.year} • {formatNumber(car.mileage)} km
+                            </p>
+                          </div>
+                          <span className="font-bold text-primary text-sm sm:text-base flex-shrink-0">
+                            {formatCurrency(car.price)}
+                          </span>
                         </div>
-                        <span className="font-bold text-primary">
-                          {formatCurrency(car.price)}
-                        </span>
                       </div>
                       
-                      <div className="flex flex-wrap gap-1 mb-3">
+                      <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
                         <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-md">
                           {car.fuel}
                         </span>
@@ -274,7 +282,10 @@ export default function DashboardPage() {
                       </div>
                       
                       <Button asChild className="w-full" size="sm">
-                        <Link href={`/dashboard/autos/${car.id}`}>Details bekijken</Link>
+                        <Link href={`/dashboard/autos/${car.id}`}>
+                          <span className="hidden sm:inline">Details bekijken</span>
+                          <span className="sm:hidden">Details</span>
+                        </Link>
                       </Button>
                     </CardContent>
                   </Card>
@@ -283,6 +294,7 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   )

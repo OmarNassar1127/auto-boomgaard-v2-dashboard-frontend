@@ -32,10 +32,10 @@ interface BasicInfoFormProps {
 
 export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumberChange }: BasicInfoFormProps) {
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="space-y-4 md:space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
         <div className="space-y-2">
-          <Label htmlFor="brand">Merk *</Label>
+          <Label htmlFor="brand" className="text-sm font-medium">Merk *</Label>
           <Input
             id="brand"
             name="brand"
@@ -44,11 +44,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
             className={errors.brand ? "border-red-500" : ""}
             placeholder="Audi"
           />
-          {errors.brand && <p className="text-sm text-red-500">{errors.brand}</p>}
+          {errors.brand && <p className="text-xs sm:text-sm text-red-500">{errors.brand}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="model">Model *</Label>
+          <Label htmlFor="model" className="text-sm font-medium">Model *</Label>
           <Input
             id="model"
             name="model"
@@ -57,11 +57,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
             className={errors.model ? "border-red-500" : ""}
             placeholder="A6"
           />
-          {errors.model && <p className="text-sm text-red-500">{errors.model}</p>}
+          {errors.model && <p className="text-xs sm:text-sm text-red-500">{errors.model}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="price">Prijs *</Label>
+          <Label htmlFor="price" className="text-sm font-medium">Prijs *</Label>
           <PriceInput
             id="price"
             placeholder="50000"
@@ -69,11 +69,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
             onValueChange={(value) => onNumberChange('price', value)}
             className={errors.price ? "border-red-500" : ""}
           />
-          {errors.price && <p className="text-sm text-red-500">{errors.price}</p>}
+          {errors.price && <p className="text-xs sm:text-sm text-red-500">{errors.price}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="tax_info">BTW Info</Label>
+          <Label htmlFor="tax_info" className="text-sm font-medium">BTW Info</Label>
           <Input
             id="tax_info"
             name="tax_info"
@@ -84,7 +84,7 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="mileage">Kilometerstand *</Label>
+          <Label htmlFor="mileage" className="text-sm font-medium">Kilometerstand *</Label>
           <NumberInputWithSuffix
             id="mileage"
             placeholder="83.500"
@@ -95,11 +95,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
             parseValue={(value) => parseInt(value.replace(/[^\d]/g, '')) || 0}
             className={errors.mileage ? "border-red-500" : ""}
           />
-          {errors.mileage && <p className="text-sm text-red-500">{errors.mileage}</p>}
+          {errors.mileage && <p className="text-xs sm:text-sm text-red-500">{errors.mileage}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="year">Bouwjaar *</Label>
+          <Label htmlFor="year" className="text-sm font-medium">Bouwjaar *</Label>
           <NumberInputWithSuffix
             id="year"
             placeholder="2022"
@@ -107,11 +107,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
             onValueChange={(value) => onNumberChange('year', value)}
             className={errors.year ? "border-red-500" : ""}
           />
-          {errors.year && <p className="text-sm text-red-500">{errors.year}</p>}
+          {errors.year && <p className="text-xs sm:text-sm text-red-500">{errors.year}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="color">Kleur *</Label>
+          <Label htmlFor="color" className="text-sm font-medium">Kleur *</Label>
           <Input
             id="color"
             name="color"
@@ -120,11 +120,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
             onChange={onChange}
             className={errors.color ? "border-red-500" : ""}
           />
-          {errors.color && <p className="text-sm text-red-500">{errors.color}</p>}
+          {errors.color && <p className="text-xs sm:text-sm text-red-500">{errors.color}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="transmission">Transmissie *</Label>
+          <Label htmlFor="transmission" className="text-sm font-medium">Transmissie *</Label>
           <Select
             value={data.transmission}
             onValueChange={(value) => onSelectChange("transmission", value)}
@@ -139,11 +139,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
               <SelectItem value="CVT">CVT</SelectItem>
             </SelectContent>
           </Select>
-          {errors.transmission && <p className="text-sm text-red-500">{errors.transmission}</p>}
+          {errors.transmission && <p className="text-xs sm:text-sm text-red-500">{errors.transmission}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="fuel">Brandstoftype *</Label>
+          <Label htmlFor="fuel" className="text-sm font-medium">Brandstoftype *</Label>
           <Select
             value={data.fuel}
             onValueChange={(value) => onSelectChange("fuel", value)}
@@ -160,11 +160,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
               <SelectItem value="LPG">LPG</SelectItem>
             </SelectContent>
           </Select>
-          {errors.fuel && <p className="text-sm text-red-500">{errors.fuel}</p>}
+          {errors.fuel && <p className="text-xs sm:text-sm text-red-500">{errors.fuel}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="power">Vermogen *</Label>
+          <Label htmlFor="power" className="text-sm font-medium">Vermogen *</Label>
           <NumberInputWithSuffix
             id="power"
             placeholder="367"
@@ -173,11 +173,11 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
             suffix="pk"
             className={errors.power ? "border-red-500" : ""}
           />
-          {errors.power && <p className="text-sm text-red-500">{errors.power}</p>}
+          {errors.power && <p className="text-xs sm:text-sm text-red-500">{errors.power}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="vehicle_status">Voertuig Status</Label>
+          <Label htmlFor="vehicle_status" className="text-sm font-medium">Voertuig Status</Label>
           <Select
             value={data.vehicle_status}
             onValueChange={(value) => onSelectChange("vehicle_status", value)}
@@ -195,7 +195,7 @@ export function BasicInfoForm({ data, errors, onChange, onSelectChange, onNumber
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="post_status">Publicatie Status</Label>
+          <Label htmlFor="post_status" className="text-sm font-medium">Publicatie Status</Label>
           <Select
             value={data.post_status}
             onValueChange={(value) => onSelectChange("post_status", value)}
