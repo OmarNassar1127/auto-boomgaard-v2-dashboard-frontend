@@ -180,7 +180,7 @@ export default function CarForm() {
         const mainImageIndex = imagesPreviews.findIndex(img => img.isMain)
         
         // Upload images with main image designation
-        await carsAPI.uploadImages(createdCar.id, files, mainImageIndex >= 0 ? mainImageIndex : undefined)
+        await carsAPI.uploadImages(createdCar.id, files, mainImageIndex >= 0 ? mainImageIndex : 0)
       }
 
       // Redirect to car list

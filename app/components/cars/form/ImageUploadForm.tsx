@@ -26,7 +26,16 @@ export function ImageUploadForm({ images, onImagesChange }: ImageUploadFormProps
       isMain: images.length === 0 && index === 0, // First image of first upload is main
       id: generateImageId()
     }))
-    onImagesChange([...images, ...newImages])
+    
+    const updatedImages = [...images, ...newImages]
+    
+    // Ensure we always have exactly one main image
+    const hasMain = updatedImages.some(img => img.isMain)
+    if (!hasMain && updatedImages.length > 0) {
+      updatedImages[0].isMain = true
+    }
+    
+    onImagesChange(updatedImages)
   }, [images, onImagesChange, generateImageId])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
